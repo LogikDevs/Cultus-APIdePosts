@@ -6,13 +6,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class posts extends Model
-{
+{   
     use HasFactory;
     use SoftDeletes;
     protected $table = "post";
     protected $primaryKey = 'id_post';
-    //protected $fillable = ['text'];    //it protects your model from mass assignment , only the fields you put in the fillable are fillable
+    
 
+    /**
+     * Get the user record associated with the post.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
 /*
     public function fk_id_user(): BelongsTo
