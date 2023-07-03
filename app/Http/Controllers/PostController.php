@@ -8,13 +8,26 @@ use Illuminate\Http\Request;
 class PostController extends Controller
 {
 
-
     public function List(Request $request) {
-        return Post::all()->where("id_", $id);
+        return Post::all();
     }
 
     public function ListOne(Request $request, $id_post) {
         return Post::findOrFail($id_post);
+    }
+
+    public function CreatePost(Request $request) {
+
+        $nuevoPost = new Post();
+
+        $nuevoPost -> text = $request ->post("text");
+        $nuevoPost -> location = $request ->post("location");
+        //$nuevoPost -> fk_id_user = $request ->post("fk_id_user");         como hago? con el token?
+        //votos se deja vacio, porque apenas se crea el post no tiene votos de ningun tipo 
+        //date tambien esta vacio porque se guarda el datetime (curdate), pero se puede con laravel?
+
+        $nuevoPost -> save();
+        return $nuevoPost;
     }
 
     public function Delete(Request $request, $id_post) {
@@ -22,57 +35,40 @@ class PostController extends Controller
         $post -> delete();
         return [ "response" => "Object with ID $id_post deleted"];
     }
-    
-    public function Create(Request $request){
-
-        $postNuevo = new Post();
-
-        $postNuevo -> nombre = $request ->post("nombre");
-        $postNuevo -> cantidad_de_patas = $request ->post("patas");
-        $postNuevo -> especie = $request ->post("especie");
-        $postNuevo -> cola = $request ->post("cola");
-
-        $postNuevo -> save();
-
-        return $postNuevo;
-    }
 
 /*
-
-            $table->id('id_post');
-            $table->unsignedBigInteger('fk_id_user');
-            $table->string('text')->nullable();
-            $table->string('location')->nullable();
-            $table->dateTime('date');
-            $table->integer("votes")->default(0);
-            
-            $table->foreign('fk_id_user')->references('id')->on('users');
-
-
-public function Modificar(Request $request, $id) {
-    $animalito = Animal::findOrFail($id);
-    $animalito -> nombre = $request ->post("nombre");
-    $animalito -> cantidad_de_patas = $request ->post("patas");
-    $animalito -> especie = $request ->post("especie");
-    $animalito -> cola = $request ->post("cola");
-    $animalito -> save();
-    return $animalito;
-}
-
+$table->id('id_post');
+$table->unsignedBigInteger('fk_id_user');
+$table->string('text')->nullable();
+$table->string('location')->nullable();
+$table->dateTime('date');
+$table->integer("votes")->default(0);
 */
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* NO VA PORQUE UN POST NO SE DEBERIA PODER MODIFICAR
+    public function Modificar(Request $request, $id_post){
+        $animalito = Animal::findOrFail($id_post);
+        $animalito -> nombre = $request ->post("nombre");
+        $animalito -> cantidad_de_patas = $request ->post("patas");
+        $animalito -> especie = $request ->post("especie");
+        $animalito -> cola = $request ->post("cola");
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+        $animalito -> save();
+        return $animalito;
+    }
+
+    public function Modificar(Request $request, $id){
+        $animalito = Animal::findOrFail($id);
+        $animalito -> nombre = $request ->post("nombre");
+        $animalito -> cantidad_de_patas = $request ->post("patas");
+        $animalito -> especie = $request ->post("especie");
+        $animalito -> cola = $request ->post("cola");
+
+        $animalito -> save();
+
+        return $animalito;
+    }
+*/
 
 
 }
