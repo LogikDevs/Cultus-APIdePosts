@@ -14,7 +14,7 @@ class Characterizes extends Model
     
 
     public function fk_id_label() {
-        return $this->belongsTo(InterestLabel::class, "fk_id_label");
+        return $this->belongsTo(interest::class, "fk_id_label");
     }
 
     public function fk_id_post() {

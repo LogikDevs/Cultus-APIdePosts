@@ -14,7 +14,7 @@ class Comments extends Model
     
 
     public function fk_id_user() {
-        return $this->belongsTo(User::class, "fk_id_user");
+        return $this->belongsTo(user::class, "fk_id_user");
     }
 
     public function fk_id_post() {

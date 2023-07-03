@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class posts extends Model
+class Post extends Model
 {   
     use HasFactory;
     use SoftDeletes;
@@ -14,8 +14,10 @@ class posts extends Model
     
 
     public function fk_id_user() {
-        return $this->belongsTo(User::class, "fk_id_user");
+        return $this->belongsTo(user::class, "fk_id_user");
     }
+    //supongo q es 'user' pq ese es el modelo del user
+
 
     protected $fillable = [
         'text'
