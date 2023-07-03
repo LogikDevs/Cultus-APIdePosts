@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MultimediaPost;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -16,30 +17,6 @@ class MultimediaPostController extends Controller
         return MultimediaPost::findOrFail($id_multimediaPost);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public function CreateMultimediaPost(Request $request) {
 
         $multimediaPost = new MultimediaPost();
@@ -53,6 +30,5 @@ class MultimediaPostController extends Controller
         $multimediaPostt = MultimediaPost::findOrFail($id_post);
         $multimediaPostt -> delete();
         return [ "response" => "Object with ID $id_post deleted"];
-    }
-    
+    }  
 }
