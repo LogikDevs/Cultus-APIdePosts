@@ -30,3 +30,5 @@ Route::get('ListOnePost', 'App\Http\Controllers\PostController@ListOnePost');
 //Route::get('/post/create', [PostController::class, 'CreatePost']);
 Route::get('/post/listAll', [PostController::class, 'ListAllPosts']);
 //Route::post('/post/create', [PostController::class, 'CreatePost']);
+Route::post('/post/create', [PostController::class, 'PostCreate']);
+
