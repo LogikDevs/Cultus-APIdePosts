@@ -9,6 +9,10 @@ use Illuminate\Http\Request;
 class MultimediaPostController extends Controller
 {
     
+
+
+
+/*
     public function List(Request $request) {
         return MultimediaPost::all();
     }
@@ -17,6 +21,8 @@ class MultimediaPostController extends Controller
         return MultimediaPost::findOrFail($id_multimediaPost);
     }
 
+
+/*
     public function CreateMultimediaPost(Request $request) {
 
         $multimediaPost = new MultimediaPost();
@@ -25,10 +31,16 @@ class MultimediaPostController extends Controller
         $multimediaPost -> save();
         return $multimediaPost;
     }
+*/
 
+/*
     public function Delete(Request $request, $id_post) {
         $multimediaPostt = MultimediaPost::findOrFail($id_post);
         $multimediaPostt -> delete();
         return [ "response" => "Object with ID $id_post deleted"];
     }  
+*/
+
+
+
 }
