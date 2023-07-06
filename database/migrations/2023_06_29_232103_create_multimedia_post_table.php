@@ -6,11 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateMultimediaPostTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
+
     public function up()
     {
         Schema::create('multimedia_post', function (Blueprint $table) {
@@ -27,13 +23,9 @@ class CreateMultimediaPostTable extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('multimedia_post');
     }
+    
 }

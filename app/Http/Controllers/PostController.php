@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 
 
@@ -14,10 +16,30 @@ use Carbon\Carbon;
 class PostController extends Controller
 {
 
+    public function obtenerIdUsuarioAutenticado() {
+        /*
+        if (Auth::check()) {
+            $usuarioAutenticado = Auth::user();
+            $userId = $usuarioAutenticado->id;
+            return $usuarioAutenticado;
+        }
+        return null;
+        */
 
 
 
 
+        //$userId = Auth::user()->id;
+
+
+        //$user = Auth::user();
+        //$userId = $user->id;
+
+        $id = Auth::id();
+
+
+        return $id;
+    }
 
 
     public function ListAllPosts(Request $request) {
@@ -44,6 +66,7 @@ class PostController extends Controller
 
 
     public function PostCreate(Request $request){
+        //$this->obtenerIdUsuarioAutenticado();
         $validation = self::CreatePostValidation($request);
 
         if ($validation->fails())
@@ -57,17 +80,6 @@ public function CreatePostValidation(Request $request){
     $validation = Validator::make($request->all(),[
         'text' => 'nullable | alpha:ascii | max:255',
         'location' => 'nullable | alpha:ascii',
-
-
-
-        'age' => 'required | integer',
-        'gender' => 'nullable | alpha',
-        'email' => 'email | required | unique:users',
-        'password' =>'required | min:8 | confirmed',
-        'profile_pic' => 'nullable',
-        'description' => 'nullable | max:255',
-        'homeland' => ' nullable | integer | exists:country,id_country',
-        'residence' => 'nullable | integer | exists:country,id_country'
     ]);
     return $validation;    
 }
@@ -160,7 +172,8 @@ public function CreatePostValidation(Request $request){
         //$nuevoPost -> fk_id_user = $request ->post("fk_id_user");         como hago? con el token?
         //votos se deja vacio, porque apenas se crea el post no tiene votos de ningun tipo 
         //date tambien esta vacio porque se guarda el datetime (curdate), pero se puede con laravel?
-        $nuevoPost -> date = Carbon::now()->toTimeString();
+        $now = date('d-m-y H:i');
+        $nuevoPost -> date = $now;
 
         $nuevoPost -> save();
         return $nuevoPost;
