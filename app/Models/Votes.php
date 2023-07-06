@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Votes extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     protected $table = "votes";
     protected $primaryKey = 'id_vote';
     
