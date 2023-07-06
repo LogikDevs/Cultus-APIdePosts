@@ -163,8 +163,9 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         
-        Barryvdh\Cors\ServiceProvider::class,
-        Fruitcake\Cors\ServiceProvider::class,
+        //Barryvdh\Cors\ServiceProvider::class,
+        //Fruitcake\Cors\ServiceProvider::class,
+        
         /*
          * Package Service Providers...
          */
