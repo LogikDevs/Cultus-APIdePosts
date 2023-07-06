@@ -30,28 +30,17 @@ Route::post('/post/delete/{id_post}', [PostController::class, 'Delete']);
 
 
 Route::get('/votes/listAll', [VotesController::class, 'ListAllVotes']);
-//              ///                 //
+///////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-
+Route::post('/votes/create', [VotesController::class, 'CreateVote']);
 
 Route::get('/votes/change/{id_post}/{id_user}', [VotesController::class, 'EditVotesPost']);
-
-
-
-
-
-
-
 //Route::middleware('auth:api')->post('/posts', 'PostController@CreatePost');
 //Route::middleware('auth:api')->post('/posts', [PostController::class, 'CreatePost']);
-
-
-
 Route::get('/votes/listOwned/{id_user}', [VotesController::class, 'ListOwnedVotes']);
-
 
 
 

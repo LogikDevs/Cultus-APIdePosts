@@ -26,6 +26,13 @@ class VotesController extends Controller
 
 
 
+    public function CreateVote(Request $request) {
+        //return Votes::all();
+    }
+
+
+
+
 
 
 
@@ -61,11 +68,6 @@ class VotesController extends Controller
     }
 
 
-    public function CreateVote(Request $request) {
-        $this -> ListAllVotes();
-
-
-    }
 
 
     public function CreateUpvote(Request $request) {
