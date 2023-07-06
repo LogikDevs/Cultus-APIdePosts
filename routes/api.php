@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
+
 /*
 Route::post('CreatePost', 'App\Http\Controllers\PostController@CreatePost');
 Route::get('ListAllPosts', 'App\Http\Controllers\PostController@ListAllPosts');
@@ -32,3 +33,5 @@ Route::get('/post/listAll', [PostController::class, 'ListAllPosts']);
 //Route::post('/post/create', [PostController::class, 'CreatePost']);
 Route::post('/post/create', [PostController::class, 'PostCreate']);
 
+//Route::middleware('auth:api')->post('/posts', 'PostController@CreatePost');
+//Route::middleware('auth:api')->post('/posts', [PostController::class, 'CreatePost']);
