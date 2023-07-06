@@ -113,9 +113,12 @@ public function obtenerIdUsuarioAutenticado() {
                     }
             */
 
-                        $user = $request->user();
-                        $userId = $user->id;
-                    }
+
+
+
+            //$user = $request->user();
+            //$userId = $user->id;
+        }
 
 
                     //obtenerId($request);
