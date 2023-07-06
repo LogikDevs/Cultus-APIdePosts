@@ -107,8 +107,11 @@ public function CreatePostValidation(Request $request){
         }
 */
 
-            $user = $request->user();
-            $userId = $user->id;
+
+
+
+            //$user = $request->user();
+            //$userId = $user->id;
         }
 
 
