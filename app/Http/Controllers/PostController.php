@@ -17,30 +17,26 @@ class PostController extends Controller {
     
     
     public function RecieveUser (Request $request) {
-        //return Post::all();
+        //
     }
-
-
-
 
     public function ListAllPosts(Request $request) {
         return Post::all();
     }
 
     public function ListOwnedPosts(Request $request) {
-        //me falta el id del usuario, no es el 
-        //$id_user = 2;
         $id_user = $request ->post("id");
-        return Post::where('fk_id_user', $id_user)->get();;
+        return Post::where('fk_id_user', $id_user)->get();
+    }
+/*
+    public function ListFollowedPosts(Request $request) {
+        proximamente: se listaran todos los posts pertenecientes a usuarios seguidos por el user loggueado
     }
 
-    public function Delete(Request $request, $id_post) {
-        //tengo que conseguir el id del post
-        $post = Post::findOrFail($id_post);
-        $post -> delete();
-        return [ "response" => "Object with ID $id_post deleted"];
+    public function ListDiscover(Request $request, $id_post) {
+        proximamente: se listaran todos los posts pertenecientes a etiquetas de interes marcadas por el user loggueado
     }
-
+*/
 
 
     public function PostCreate(Request $request){
@@ -70,30 +66,11 @@ class PostController extends Controller {
                     return $nuevoPost;
                 }
 
-/*
-    public function ListFollowedPosts(Request $request) {
-        proximamente: se listaran todos los posts pertenecientes a usuarios seguidos por el user loggueado
-    }
-
-    public function ListDiscover(Request $request, $id_post) {
-        proximamente: se listaran todos los posts pertenecientes a etiquetas de interes marcadas por el user loggueado
-    }
-*/
-
-
-
-
-
-/*
-//NO SE SI VA PORQUE UN POST NO SE DEBERIA PODER MODIFICAR
-    public function Edit(user $request, $id_post){
+    public function Delete(Request $request, $id_post) {
+        //falta conseguir el id del post
         $post = Post::findOrFail($id_post);
-        $post -> text = $request ->post("text"); 
-        $post -> location = $request ->post("location");
-        
-        $post -> save();  
-        return $post;
+        $post -> delete();
+        return [ "response" => "Object with ID $id_post deleted"];
     }
-*/
 
 }
