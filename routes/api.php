@@ -24,34 +24,23 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 //andan lol por las dudas
 Route::get('/post/listAll', [PostController::class, 'ListAllPosts']);
-Route::get('/post/listOwned/{id_post}', [PostController::class, 'ListOwnedPosts']);
+Route::get('/post/listOwned', [PostController::class, 'ListOwnedPosts']);
 Route::post('/post/create', [PostController::class, 'PostCreate']);
 Route::post('/post/delete/{id_post}', [PostController::class, 'Delete']);
 
 
 Route::get('/votes/listAll', [VotesController::class, 'ListAllVotes']);
-//              ///                 //
+///////////////////////////////////////////////////////////////////////////////////////////
+//ListOwnedVotes
+Route::get('/votes/listOwned/{id_vote}', [VotesController::class, 'ListAllVotes']);
 
 
-
-
-
+Route::post('/votes/create', [VotesController::class, 'CreateVote']);
 
 Route::get('/votes/change/{id_post}/{id_user}', [VotesController::class, 'EditVotesPost']);
-
-
-
-
-
-
-
 //Route::middleware('auth:api')->post('/posts', 'PostController@CreatePost');
 //Route::middleware('auth:api')->post('/posts', [PostController::class, 'CreatePost']);
-
-
-
 Route::get('/votes/listOwned/{id_user}', [VotesController::class, 'ListOwnedVotes']);
-
 
 
 
