@@ -9,13 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 
-
-
-
 class PostController extends Controller {
-    
-    
-    
+
     public function RecieveUser (Request $request) {
         //
     }
@@ -30,14 +25,13 @@ class PostController extends Controller {
     }
 /*
     public function ListFollowedPosts(Request $request) {
-        proximamente: se listaran todos los posts pertenecientes a usuarios seguidos por el user loggueado
+        se listaran todos los posts pertenecientes a usuarios seguidos por el user loggueado
     }
 
     public function ListDiscover(Request $request, $id_post) {
-        proximamente: se listaran todos los posts pertenecientes a etiquetas de interes marcadas por el user loggueado
+        se listaran todos los posts pertenecientes a etiquetas de interes marcadas por el user loggueado
     }
 */
-
 
     public function PostCreate(Request $request){
         $validation = self::CreatePostValidation($request);
@@ -67,7 +61,6 @@ class PostController extends Controller {
                 }
 
     public function Delete(Request $request, $id_post) {
-        //falta conseguir el id del post
         $post = Post::findOrFail($id_post);
         $post -> delete();
         return [ "response" => "Object with ID $id_post deleted"];

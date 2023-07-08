@@ -13,7 +13,7 @@ class MultimediaPost extends Model
     protected $primaryKey = 'id_multimediaPost';
     
     
-    public function fk_id_post() {
+    public function post() {
         return $this->belongsTo(Post::class, "fk_id_post");
     }
 }
