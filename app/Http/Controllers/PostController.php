@@ -2,77 +2,68 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
-class PostController extends Controller
-{
+use Illuminate\Support\Facades\Validator;
 
 
-    public function List(Request $request) {
-        return Post::all()->where("id_", $id);
+class PostController extends Controller {
+
+    public function RecieveUser (Request $request) {
+        //
     }
 
-    public function ListOne(Request $request, $id_post) {
-        return Post::findOrFail($id_post);
+    public function ListAllPosts(Request $request) {
+        return Post::all();
     }
+
+    public function ListOwnedPosts(Request $request) {
+        $id_user = $request ->post("id");
+        return Post::where('fk_id_user', $id_user)->get();
+    }
+/*
+    public function ListFollowedPosts(Request $request) {
+        se listaran todos los posts pertenecientes a usuarios seguidos por el user loggueado
+    }
+
+    public function ListDiscover(Request $request, $id_post) {
+        se listaran todos los posts pertenecientes a etiquetas de interes marcadas por el user loggueado
+    }
+*/
+
+    public function PostCreate(Request $request){
+        $validation = self::CreatePostValidation($request);
+        if ($validation->fails())
+        return $validation->errors();
+        return $this -> CreatePost($request);
+    }
+
+                public function CreatePostValidation(Request $request){
+                    $validation = Validator::make($request->all(),[
+                        'text' => 'nullable | max:255',
+                        'location' => 'nullable | max:255',
+                    ]);
+                    return $validation;    
+                }
+
+                public function CreatePost(Request $request) {
+                    $nuevoPost = new Post();
+                    $now = date('d-m-y H:i');
+                    $nuevoPost -> text = $request ->post("text");
+                    $nuevoPost -> location = $request ->post("location");
+                    $nuevoPost -> fk_id_user = $request ->post("id");
+                    $nuevoPost -> date = $now;
+
+                    $nuevoPost -> save();
+                    return $nuevoPost;
+                }
 
     public function Delete(Request $request, $id_post) {
         $post = Post::findOrFail($id_post);
         $post -> delete();
         return [ "response" => "Object with ID $id_post deleted"];
     }
-    
-    public function Create(Request $request){
-
-        $postNuevo = new Post();
-
-        $postNuevo -> nombre = $request ->post("nombre");
-        $postNuevo -> cantidad_de_patas = $request ->post("patas");
-        $postNuevo -> especie = $request ->post("especie");
-        $postNuevo -> cola = $request ->post("cola");
-
-        $postNuevo -> save();
-
-        return $postNuevo;
-    }
-
-/*
-
-            $table->id('id_post');
-            $table->unsignedBigInteger('fk_id_user');
-            $table->string('text')->nullable();
-            $table->string('location')->nullable();
-            $table->dateTime('date');
-            $table->integer("votes")->default(0);
-            
-            $table->foreign('fk_id_user')->references('id')->on('users');
-
-
-public function Modificar(Request $request, $id) {
-    $animalito = Animal::findOrFail($id);
-    $animalito -> nombre = $request ->post("nombre");
-    $animalito -> cantidad_de_patas = $request ->post("patas");
-    $animalito -> especie = $request ->post("especie");
-    $animalito -> cola = $request ->post("cola");
-    $animalito -> save();
-    return $animalito;
-}
-
-*/
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 }

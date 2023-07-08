@@ -4,42 +4,29 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Passport\Passport;
 
-class posts extends Model
+class Post extends Model
 {   
     use HasFactory;
-    use SoftDeletes;
     protected $table = "post";
     protected $primaryKey = 'id_post';
     
-
-    /**
-     * Get the user record associated with the post.
-     */
-    public function user()
-    {
-        return $this->belongsTo(User::class);
+    
+    public function user() {
+        return $this->hasMany(user::class, 'fk_id_user');
     }
 
-/*
-    public function fk_id_user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'fk_id_user');
+    public function votes() {
+        return $this->hasMany(Vote::class, 'fk_id_post');
     }
-*/
 
-    /*
-    CREATE TABLE personas(
-        id int primary key auto_increment,
-        nombre varchar(255) NOT NULL,
-        apellido varchar(255) NOT NULL,
-        email varchar(255) NULL UNIQUE,
-        created_at timestamp DEFAULT CURRENT_TIMESTAMP,
-        updated_at timestamp DEFAULT CURRENT_TIMESTAMP
-      );
-    */
+    public function comments() {
+        return $this->hasMany(Comments::class, 'fk_id_post');
+    }
+
+    protected $fillable = [
+        'text'
+    ];
 }
-
-
-
 

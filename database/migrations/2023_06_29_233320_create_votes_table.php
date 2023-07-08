@@ -6,11 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateVotesTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
+    
     public function up()
     {
         Schema::create('votes', function (Blueprint $table) {
@@ -20,6 +16,7 @@ class CreateVotesTable extends Migration
             $table->boolean('upvote')->default(0);
             $table->boolean('downvote')->default(0);
 
+            $table->unique(['fk_id_user','fk_id_post']);
             $table->foreign('fk_id_user')->references('id')->on('users');
             $table->foreign('fk_id_post')->references('id_post')->on('post');
 
@@ -28,13 +25,9 @@ class CreateVotesTable extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('votes');
     }
+    
 }
