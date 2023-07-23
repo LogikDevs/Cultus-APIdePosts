@@ -26,7 +26,8 @@ class Post extends Model
     }
 
     protected $fillable = [
-        'text'
+        'text',
+        'location'
     ];
 }
 
