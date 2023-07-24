@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Characterizes extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     protected $table = "characterizes";
     protected $primaryKey = 'id_characterizes';
     

@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class MultimediaPost extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     protected $table = "multimedia_post";
     protected $primaryKey = 'id_multimediaPost';
     
