@@ -12,7 +12,7 @@ class CreatePostTable extends Migration
         Schema::create('post', function (Blueprint $table) {
             $table->id('id_post');
             $table->unsignedBigInteger('fk_id_user');
-            $table->string('text')->nullable();
+            $table->text('text')->nullable()->max(255);
             $table->string('location')->nullable();
             $table->dateTime('date');
             $table->integer("votes")->default(0);
