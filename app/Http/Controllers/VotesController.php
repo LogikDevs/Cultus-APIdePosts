@@ -14,13 +14,36 @@ class VotesController extends Controller
         return Votes::all();
     }
 
-    public function ListOwnedVotes(Request $request) {
-        $id_user = $request ->post("id");
-        return Votes::where('fk_id_user', $id_user)->get();;
+    public function ListOwnedVotes(Request $request, $id_user) {
+        return Votes::where('fk_id_user', $id_user)->get();
+    }
+
+    public function ListPostVotes(Request $request, $id_post) {
+        return Votes::where('fk_id_post', $id_post)->get();
     }
 
     public function CreateVote(Request $request) {
+        $fk_id_user = $request->input('fk_id_user');
+        $fk_id_post = $request->input('fk_id_post');
+
+        $findVote = Votes::where('fk_id_user', $fk_id_user)
+                             ->where('fk_id_post', $fk_id_post)
+                             ->first();
     
+        if ($findVote) {
+            $findVote -> vote = $request -> input('vote');
+            $findVote->save();
+            //return $findVote;
+        } else {
+            $newVote = new Votes();
+            $newVote -> fk_id_user = $fk_id_user;
+            $newVote -> fk_id_post = $fk_id_post;
+            $newVote -> vote = $request->input('vote');
+            $newVote->save();
+            // return $newVote;
+        }
+        
+    /*
         $data = $request->all();
             $conjunto = [
                 'fk_id_user' => $data['id_user'],
@@ -41,6 +64,7 @@ class VotesController extends Controller
 
             $newVote->save();
         }
+    */
     }
 
     public function Delete(Request $request, $id_vote) {
