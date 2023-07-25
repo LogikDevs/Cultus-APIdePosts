@@ -12,13 +12,10 @@ class VotesFactory extends Factory
 {
     public function definition()
     {
-        $upvote = $this->faker->boolean;
-        $downvote = !$upvote;
         return [
             'fk_id_user' => User::all()->random()->id,
             'fk_id_post' => Post::all()->random()->id_post,
-            'upvote' => $upvote,
-            'downvote' => $downvote,
+            'vote' => $this->faker->boolean
         ];
     }
 }
