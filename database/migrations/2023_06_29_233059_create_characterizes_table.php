@@ -16,7 +16,6 @@ class CreateCharacterizesTable extends Migration
 
             $table->foreign('fk_id_label')->references('id_label')->on('interest_label');
             $table->foreign('fk_id_post')->references('id_post')->on('post');
-            $table->unique(['fk_id_label','fk_id_post']);
 
             $table->unique(['fk_id_label','fk_id_post']);
 
