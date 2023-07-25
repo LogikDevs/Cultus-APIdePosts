@@ -18,7 +18,7 @@ class CreateVotesTable extends Migration
             $table->foreign('fk_id_user')->references('id')->on('users');
             $table->foreign('fk_id_post')->references('id_post')->on('post');
             $table->unique(['fk_id_user','fk_id_post']);
-
+          
             $table->timestamps();
             $table->softDeletes();
         });
