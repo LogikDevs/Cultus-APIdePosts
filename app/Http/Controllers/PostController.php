@@ -22,19 +22,11 @@ class PostController extends Controller {
     }
 
     public function ListUserPosts(Request $request, $id_user) {
-        $postsUser = Post::where('fk_id_user', $id_user)->get();
-        return $postsUser;
-    /*
-        $postList = [];
-        foreach ($postsUser as $post) {
-            $postList[] = [
-                'text' => $post->text,
-                'location' => $post->location,
-            ];
-        }
+        return Post::where('fk_id_user', $id_user)->get();
+    }
 
-        return $postList;
-    */
+    public function ListOnePost(Request $request, $id_post) {
+        return Post::where('id_post', $id_post)->get();
     }
 
 /*
@@ -59,7 +51,7 @@ class PostController extends Controller {
         $nuevoPost = new Post();
         $nuevoPost->text = $request->input('text');
         $nuevoPost->location = $request->input('location');
-        $nuevoPost->fk_id_user = $request->input('fk_id_user');
+        $nuevoPost->fk_id_user = $request->input('id');
         $nuevoPost -> date = date('d-m-y H:i');
         $nuevoPost->save();
 
