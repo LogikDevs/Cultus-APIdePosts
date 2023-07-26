@@ -9,8 +9,6 @@ use Illuminate\Http\Request;
 
 class CommentsController extends Controller
 {
-
-
     public function ListComments(Request $request) {
         return Comments::all();
     }
