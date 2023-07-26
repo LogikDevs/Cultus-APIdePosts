@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\User;
+use App\Models\Votes;
 use Illuminate\Support\Facades\Auth;
 use Response;
 use App\Http\Controllers\Controller;
@@ -26,7 +27,7 @@ class PostController extends Controller {
     }
 
     public function ListOnePost(Request $request, $id_post) {
-        return Post::where('id_post', $id_post)->get();
+        return Post::where('id_post', $id_post)->first();
     }
 
 /*
@@ -39,53 +40,26 @@ class PostController extends Controller {
     }
 */
 
-
-    public function PostCreate(Request $request){
-        $reglasValidacion = [
-            'text' => 'nullable | max:255',
-            'location' => 'nullable | max:255',
+    public function CreatePost(Request $request){
+        $validation = [
+            'text' => 'nullable|max:255',
+            'location' => 'nullable|max:255',
         ];
-
-        $request->validate($reglasValidacion);
-
-        $nuevoPost = new Post();
-        $nuevoPost->text = $request->input('text');
-        $nuevoPost->location = $request->input('location');
-        $nuevoPost->fk_id_user = $request->input('id');
-        $nuevoPost -> date = date('d-m-y H:i');
-        $nuevoPost->save();
-
-        return $nuevoPost;
+    
+        $request->validate($validation);
+        return $this->savePost($request);
     }
 
-/*
-    public function PostCreate(Request $request){
-        $validation = self::CreatePostValidation($request);
-        if ($validation->fails())
-        return $validation->errors();
-        return $this -> CreatePost($request);
-    }
-
-                public function CreatePostValidation(Request $request){
-                    $validation = Validator::make($request->all(),[
-                        'text' => 'nullable | max:255',
-                        'location' => 'nullable | max:255',
-                    ]);
-                    return $validation;    
-                }
-
-                public function CreatePost(Request $request) {
-                    $nuevoPost = new Post();
-                    $now = date('d-m-y H:i');
-                    $nuevoPost -> text = $request ->post("text");
-                    $nuevoPost -> location = $request ->post("location");
-                    $nuevoPost -> fk_id_user = $request ->post("id");
-                    $nuevoPost -> date = $now;
-
-                    $nuevoPost -> save();
-                    return $nuevoPost;
-                }
-*/
+        private function savePost(Request $request) {
+            $newPost = new Post();
+            $newPost -> text = $request->input('text');
+            $newPost -> location = $request->input('location');
+            $newPost -> fk_id_user = $request->input('id');
+            $newPost -> date = date('d-m-y H:i');
+            $newPost -> save();
+        
+            return $newPost;
+        }
 
     public function Delete(Request $request, $id_post) {
         $post = Post::findOrFail($id_post);
