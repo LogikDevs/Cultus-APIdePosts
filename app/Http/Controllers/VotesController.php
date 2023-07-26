@@ -58,12 +58,12 @@ class VotesController extends Controller
 
         $post = Post::find($id_post);
 
-        $this->updateOrCreateVote($post, $id_user, $vote);
-        $this->updatePostVoteCount($post);
+        $this->UpdateCreateVote($post, $id_user, $vote);
+        $this->UpdateVoteCount($post);
 
         return response()->json(['message' => 'Voto registrado exitosamente']);
     }
-            private function updateOrCreateVote(Post $post, $id_user, $vote) {
+            private function UpdateCreateVote(Post $post, $id_user, $vote) {
                 $existingVote = $post->votes()->where('fk_id_user', $id_user)->first();
 
                 if ($existingVote) {
@@ -76,7 +76,7 @@ class VotesController extends Controller
                     ]);
                 }
             }
-            private function updatePostVoteCount(Post $post) {
+            private function UpdateVoteCount(Post $post) {
                 $votesCount = $post->votes()->where('vote', true)->count() - $post->votes()->where('vote', false)->count();
                 $post->votes = $votesCount;
                 $post->save();
