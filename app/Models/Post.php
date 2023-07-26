@@ -18,7 +18,7 @@ class Post extends Model
     }
 
     public function votes() {
-        return $this->hasMany(Vote::class, 'fk_id_post');
+        return $this->hasMany(Votes::class, 'fk_id_post');
     }
 
     public function comments() {
