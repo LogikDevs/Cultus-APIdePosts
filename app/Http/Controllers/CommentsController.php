@@ -29,8 +29,8 @@ class CommentsController extends Controller
 
     public function CreateComment(Request $request) {
         $newComment = new Comments();
-        $newComment -> fk_id_user = $request ->post("userId");
-        $newComment -> fk_id_user = $request ->post("postId");
+        $newComment -> fk_id_user = $request ->post("fk_id_user");
+        $newComment -> fk_id_post = $request ->post("fk_id_post");
         $newComment -> text = $request ->post("text");
 
         $newComment -> save();
