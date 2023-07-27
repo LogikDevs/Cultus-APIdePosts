@@ -18,13 +18,8 @@ class CommentsController extends Controller
         return Comments::where('fk_id_user', $id_user)->get();
     }
 
-    public function ListPostComments(Request $request) {
-        $id_post = $request ->post("postId");
-        $post = Post::findOrFail($id_post);
-        $comments = $post->comments;
-        return response()->json([
-            'comments' => $comments
-        ]);
+    public function ListPostComments(Request $request, $id_post) {
+        return Comments::where('fk_id_post', $id_post)->get();
     }
 
     public function CreateComment(Request $request) {
