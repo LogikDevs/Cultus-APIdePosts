@@ -12,11 +12,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 
-class PostController extends Controller {
-
+class PostController extends Controller 
+{
+    
+/*
     public function RecieveUser (Request $request) {
         //
     }
+*/
 
     public function ListAllPosts(Request $request) {
         return Post::all();
@@ -45,26 +48,23 @@ class PostController extends Controller {
             'text' => 'nullable|max:255',
             'location' => 'nullable|max:255',
         ];
-    
+
         $request->validate($validation);
         return $this->savePost($request);
     }
-
-        private function savePost(Request $request) {
-            $newPost = new Post();
-            $newPost -> text = $request->input('text');
-            $newPost -> location = $request->input('location');
-            $newPost -> fk_id_user = $request->input('id');
-            $newPost -> date = date('d-m-y H:i');
-            $newPost -> save();
-        
-            return $newPost;
-        }
+            private function savePost(Request $request) {
+                $newPost = new Post();
+                $newPost -> text = $request->input('text');
+                $newPost -> location = $request->input('location');
+                $newPost -> fk_id_user = $request->input('id');
+                $newPost -> date = date('d-m-y H:i');
+                $newPost -> save();
+            
+                return $newPost;
+            }
 
     public function Delete(Request $request, $id_post) {
         $post = Post::findOrFail($id_post);
         $post -> delete();
-        return [ "response" => "Object with ID $id_post deleted"];
     }
-
 }
