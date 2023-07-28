@@ -13,8 +13,7 @@ class CommentsController extends Controller
         return Comments::all();
     }
 
-    public function ListOwnedComments(Request $request) {
-        $id_user = $request ->post("userId");
+    public function ListOwnedComments(Request $request, $id_user) {
         return Comments::where('fk_id_user', $id_user)->get();
     }
 
@@ -22,22 +21,27 @@ class CommentsController extends Controller
         return Comments::where('fk_id_post', $id_post)->get();
     }
 
-    public function CreateComment(Request $request) {
-        $newComment = new Comments();
-        $newComment -> fk_id_user = $request ->post("fk_id_user");
-        $newComment -> fk_id_post = $request ->post("fk_id_post");
-        $newComment -> text = $request ->post("text");
-
-        $newComment -> save();
-        return $newComment;
+    public function CreateComment(Request $request){
+        $validation = [
+            'text' => 'required | max:255',
+        ];
+    
+        $request->validate($validation);
+        return $this->saveComment($request);
     }
 
-    public function Delete($id_comment) {
+            private function saveComment(Request $request) {
+                $newComment = new Comments();
+                $newComment -> fk_id_user = $request ->input("fk_id_user");
+                $newComment -> fk_id_post = $request ->input("fk_id_post");
+                $newComment -> text = $request ->input("text");
+                $newComment -> save();
+
+                return $newComment;
+            }
+
+    public function Delete(Request $request, $id_comment) {
         $comment = Comments::findOrFail($id_comment);
         $comment -> delete();
-        return [ "response" => "Object with ID $id_comment deleted"];
     }
-
-
-
 }
