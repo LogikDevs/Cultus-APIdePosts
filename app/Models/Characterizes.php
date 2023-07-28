@@ -19,4 +19,9 @@ class Characterizes extends Model
     public function post() {
         return $this->belongsTo(Post::class, "fk_id_post");
     }
+
+    protected $fillable = [
+        'fk_id_label',
+        'fk_id_post'
+    ];
 }
