@@ -23,6 +23,8 @@ class CommentsController extends Controller
 
     public function CreateComment(Request $request){
         $validation = [
+            'fk_id_user' => 'required | exists:users,id',
+            'fk_id_post' => 'required | exists:post,id_post',
             'text' => 'required | max:255',
         ];
     

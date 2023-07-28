@@ -9,13 +9,6 @@ use Illuminate\Http\Request;
 class CharacterizesController extends Controller
 {
 /*
-            $table->id('id_characterizes');
-            $table->unsignedBigInteger('fk_id_label');
-            $table->unsignedBigInteger('fk_id_post');
-*/
-
-
-/*
     public function ListOwnedComments(Request $request, $id_user) {
         return Comments::where('fk_id_user', $id_user)->get();
     }
@@ -33,14 +26,7 @@ class CharacterizesController extends Controller
         return Characterizes::where('fk_id_label', $id_label)->get();
     }
 
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////
-
-    public function store(Request $request) {
+    public function CreateCharacterizes(Request $request) {
         $validation = $request->validate([
             'fk_id_label'=>'required | exists:interest_label,id_label',
             'fk_id_post'=>'required | exists:post,id_post'
@@ -48,5 +34,10 @@ class CharacterizesController extends Controller
 
         $characterize = Characterizes::create($validation);
         return response()->json($characterize, 201);
+    }
+
+    public function Delete(Request $request, $id_characterizes) {
+        $characterizes = Characterizes::findOrFail($id_characterizes);
+        $characterizes -> delete();
     }
 }
