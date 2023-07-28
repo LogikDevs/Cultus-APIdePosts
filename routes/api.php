@@ -42,15 +42,8 @@ Route::get('/comments/listPost/{id_post}', [CommentsController::class, 'ListPost
 Route::post('/comments/create', [CommentsController::class, 'CreateComment']);
 Route::post('/comments/delete/{id_vote}', [CommentsController::class, 'Delete']);
 
-
-
-
-
-
-
-
 Route::get('/characterizes/listAll', [CharacterizesController::class, 'ListAllCharacterizes']);
 Route::get('/characterizes/listPost/{id_post}', [CharacterizesController::class, 'ListPostLabels']);
-Route::get('/characterizes/listLabel/{id_post}', [CharacterizesController::class, 'ListLabelPosts']);
-
-Route::post('/characterizes/store', [CharacterizesController::class, 'store']);
+Route::get('/characterizes/listLabel/{id_label}', [CharacterizesController::class, 'ListLabelPosts']);
+Route::post('/characterizes/create', [CharacterizesController::class, 'CreateCharacterizes']);
+Route::post('/characterizes/delete/{id_characterizes}', [CharacterizesController::class, 'Delete']);
