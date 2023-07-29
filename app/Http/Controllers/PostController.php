@@ -46,8 +46,7 @@ class PostController extends Controller
     public function CreatePost(Request $request){
         $validation = [
             'text' => 'nullable | max:255',
-            'location' => 'nullable | max:100',
-            'fk_id_user' => 'required | exists:users,id',
+            'location' => 'nullable | max:100'
         ];
 
         $request->validate($validation);
