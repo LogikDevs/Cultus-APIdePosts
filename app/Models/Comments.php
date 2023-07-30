@@ -19,4 +19,10 @@ class Comments extends Model
     public function post() {
         return $this->belongsTo(Post::class, "fk_id_post");
     }
+
+    protected $fillable = [
+        'fk_id_user',
+        'fk_id_post',
+        'text'
+    ];
 }

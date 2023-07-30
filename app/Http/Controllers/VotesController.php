@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 
 class VotesController extends Controller
 {
-
     public function ListAllVotes(Request $request) {
         return Votes::all();
     }
@@ -50,7 +49,6 @@ class VotesController extends Controller
     }
 */
 
-
     public function CreateVote(Request $request) {
         $id_user = $request->input('fk_id_user');
         $id_post = $request->input('fk_id_post');
@@ -58,12 +56,10 @@ class VotesController extends Controller
 
         $post = Post::find($id_post);
 
-        $this->updateOrCreateVote($post, $id_user, $vote);
-        $this->updatePostVoteCount($post);
-
-        return response()->json(['message' => 'Voto registrado exitosamente']);
+        $this->UpdateCreateVote($post, $id_user, $vote);
+        $this->UpdateVoteCount($post);
     }
-            private function updateOrCreateVote(Post $post, $id_user, $vote) {
+            private function UpdateCreateVote(Post $post, $id_user, $vote) {
                 $existingVote = $post->votes()->where('fk_id_user', $id_user)->first();
 
                 if ($existingVote) {
@@ -76,17 +72,16 @@ class VotesController extends Controller
                     ]);
                 }
             }
-            private function updatePostVoteCount(Post $post) {
+
+            private function UpdateVoteCount(Post $post) {
                 $votesCount = $post->votes()->where('vote', true)->count() - $post->votes()->where('vote', false)->count();
                 $post->votes = $votesCount;
                 $post->save();
             }
 
-            
     public function Delete(Request $request, $id_vote) {
         $vote = Votes::findOrFail($id_vote);
         $vote -> delete();
         return [ "response" => "Object with ID $id_vote deleted"];
     }
-
 }

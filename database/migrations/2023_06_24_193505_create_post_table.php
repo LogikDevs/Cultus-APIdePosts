@@ -16,6 +16,7 @@ class CreatePostTable extends Migration
             $table->string('location')->nullable();
             $table->dateTime('date');
             $table->integer("votes")->default(0);
+            $table->integer("comments")->default(0);
             
             $table->foreign('fk_id_user')->references('id')->on('users');
 
