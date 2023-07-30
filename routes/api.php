@@ -6,6 +6,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\VotesController;
 use App\Http\Controllers\CommentsController;
 use App\Http\Controllers\CharacterizesController;
+use App\Http\Controllers\MultimediaPostController;
  
 
 /*
@@ -47,3 +48,8 @@ Route::get('/characterizes/listPost/{id_post}', [CharacterizesController::class,
 Route::get('/characterizes/listLabel/{id_label}', [CharacterizesController::class, 'ListLabelPosts']);
 Route::post('/characterizes/create', [CharacterizesController::class, 'CreateCharacterizes']);
 Route::post('/characterizes/delete/{id_characterizes}', [CharacterizesController::class, 'Delete']);
+
+Route::get('/multimedia/listAll', [MultimediaPostController::class, 'ListAll']);
+Route::get('/multimedia/listPost/{id_post}', [MultimediaPostController::class, 'ListMultimediaPost']);
+Route::post('/multimedia/create', [MultimediaPostController::class, 'SaveMultimedia']);
+Route::post('/multimedia/delete/{id_post}', [MultimediaPostController::class, 'Delete']);
