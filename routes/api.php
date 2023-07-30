@@ -5,6 +5,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\VotesController;
 use App\Http\Controllers\CommentsController;
+<<<<<<< Updated upstream
+=======
+use App\Http\Controllers\CharacterizesController;
+use App\Http\Controllers\MultimediaPostController;
+>>>>>>> Stashed changes
  
 
 /*
