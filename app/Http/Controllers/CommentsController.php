@@ -28,8 +28,10 @@ class CommentsController extends Controller
             'text' => 'required | max:255',
         ];
     
+        
         $request->validate($validation);
-        return $this->saveComment($request);
+        $newComment = $this->saveComment($request);
+        $this->UpdateCommentCount($newComment->fk_id_post);
     }
 
             private function saveComment(Request $request) {
@@ -39,33 +41,20 @@ class CommentsController extends Controller
                 $newComment -> text = $request ->input("text");
                 $newComment -> save();
 
-                $this->UpdateCommentCount($request);
                 return $newComment;
             }
-
-
-
-
-
-
  
     public function Delete(Request $request, $id_comment) {
-        $request = Comments::findOrFail($id_comment);
-        $request -> delete();
-
-        //$this->UpdateCommentCount($request);
-        $a = Comments::where('fk_id_post', $request->post("fk_id_post"))->get()->count();
-        return $a;
+        $comment = Comments::findOrFail($id_comment);
+        $postId = $comment->fk_id_post;
+        $comment -> delete();
+        $this->UpdateCommentCount($postId);
     }
 
-
-    private function UpdateCommentCount(Request $request) {
-        $totalComments = Comments::where('fk_id_post', $request->input("fk_id_post"))->get()->count();
-        $post = Post::find($request->input("fk_id_post"));
-        $post -> comments = $totalComments;
-        $post -> save();
-        
-        return "estamos en la funcion";
-        //return $totalComments;
+    private function UpdateCommentCount($postId) {
+        $totalComments = Comments::where('fk_id_post', $postId)->count();
+        $post = Post::find($postId);
+        $post->comments = $totalComments;
+        $post->save();
     }
 }
