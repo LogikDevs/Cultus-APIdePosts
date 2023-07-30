@@ -29,10 +29,6 @@ class CommentsController extends Controller
         ];
     
         $request->validate($validation);
-        //$this->saveComment($request);
-        //$this->UpdateCommentCount($request);
-
-
         $newComment = $this->saveComment($request);
         $this->UpdateCommentCount($newComment->fk_id_post);
     }
@@ -46,40 +42,18 @@ class CommentsController extends Controller
 
                 return $newComment;
             }
-
-
-
-
-
-
  
     public function Delete(Request $request, $id_comment) {
         $comment = Comments::findOrFail($id_comment);
-    $postId = $comment->fk_id_post;
+        $postId = $comment->fk_id_post;
         $comment -> delete();
-    $this->UpdateCommentCount($postId);
-
-        //$this->UpdateCommentCount($request);
-        //$a = Comments::where('fk_id_post', $request->post("fk_id_post"))->get()->count();
-        //return $a;
+        $this->UpdateCommentCount($postId);
     }
-
-
-    //private function UpdateCommentCount(Request $request) {
-    /*
-        $totalComments = Comments::where('fk_id_post', $request->input("fk_id_post"))->get()->count();
-        $post = Post::find($request->input("fk_id_post"));
-        $post -> comments = $totalComments;
-        $post -> save();
-    */
 
     private function UpdateCommentCount($postId) {
         $totalComments = Comments::where('fk_id_post', $postId)->count();
         $post = Post::find($postId);
         $post->comments = $totalComments;
         $post->save();
-
-        return "estamos en la funcion";
-        //return $totalComments;
     }
 }
