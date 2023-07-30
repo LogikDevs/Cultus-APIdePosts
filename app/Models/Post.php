@@ -25,6 +25,10 @@ class Post extends Model
         return $this->hasMany(Comments::class, 'fk_id_post');
     }
 
+    public function multimedia() {
+        return $this->hasMany(MultimediaPost::class, 'fk_id_post');
+    }
+
     protected $fillable = [
         'text',
         'location'
