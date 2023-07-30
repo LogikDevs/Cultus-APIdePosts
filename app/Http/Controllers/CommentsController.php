@@ -28,6 +28,7 @@ class CommentsController extends Controller
             'text' => 'required | max:255',
         ];
     
+        
         $request->validate($validation);
         $newComment = $this->saveComment($request);
         $this->UpdateCommentCount($newComment->fk_id_post);
