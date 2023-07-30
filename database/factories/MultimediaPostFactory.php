@@ -12,7 +12,10 @@ class MultimediaPostFactory extends Factory
     {
         return [
             'fk_id_post' => Post::all()->random()->id_post,
-            'multimediaLink' => $this->faker->url('http')
+            //'multimediaLink' => $this->faker->url('http')
+            //'multimediaLink' => random_pic('public/post/images')
+            'multimediaLink' => 'public/post/images'
+
         ];
     }
 }
