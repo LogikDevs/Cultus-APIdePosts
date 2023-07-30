@@ -29,8 +29,8 @@ class PostController extends Controller
         return Post::where('fk_id_user', $id_user)->get();
     }
 
-    public function ListOnePost(Request $request, $id_post) {
-        return Post::where('id_post', $id_post)->first();
+    public function ListOnePost($id_post) {
+        return Post::findOrFail($id_post);
     }
 
 /*
