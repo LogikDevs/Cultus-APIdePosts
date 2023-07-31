@@ -64,8 +64,5 @@ class CommentsController extends Controller
         $post = Post::find($request->input("fk_id_post"));
         $post -> comments = $totalComments;
         $post -> save();
-        
-        return "estamos en la funcion";
-        //return $totalComments;
     }
 }
