@@ -13,7 +13,8 @@ class PostFactory extends Factory
         return [
             'fk_id_user' => User::all()->random()->id,
             'text' => $this->faker->paragraph(),
-            'location' => $this->faker->address(),
+            'latitud' => $this->faker->latitude(),
+            'longitud' => $this->faker->longitude(),
             'date' => $this->faker->dateTime()
         ];
     }
