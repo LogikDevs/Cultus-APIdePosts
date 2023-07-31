@@ -44,11 +44,16 @@ class CommentsController extends Controller
                 return $newComment;
             }
  
-    public function Delete(Request $request, $id_comment) {
+    public function DeleteComment(Request $request, $id_comment) {
         $comment = Comments::findOrFail($id_comment);
         $postId = $comment->fk_id_post;
         $comment -> delete();
         $this->UpdateCommentCount($postId);
+    }
+
+    public function DeletePost($id_post) {
+        $comment = Comments::where('fk_id_post', $id_post)->get();
+        $comment -> delete();
     }
 
     private function UpdateCommentCount($postId) {
