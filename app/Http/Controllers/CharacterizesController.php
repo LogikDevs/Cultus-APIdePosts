@@ -20,11 +20,7 @@ class CharacterizesController extends Controller
     public function ListLabelPosts(Request $request, $id_label) {
         return Characterizes::where('fk_id_label', $id_label)->get();
     }
-/*
-    public function ListPostLabels(Request $request, $interest) {
-        return Characterizes::where('interest', $interest)->get();
-    }
-*/
+
     public function CreateCharacterizes(Request $request) {
         $validation = $request->validate([
             'fk_id_label'=>'required | exists:interest_label,id_label',
@@ -35,8 +31,15 @@ class CharacterizesController extends Controller
         return response()->json($characterize, 201);
     }
 
+    public function DeletePost($id_post) {
+        $characterizes = Characterizes::where('fk_id_post', $id_post)->get();
+        $characterizes -> delete();
+    }
+
+/*
     public function Delete(Request $request, $id_characterizes) {
         $characterizes = Characterizes::findOrFail($id_characterizes);
         $characterizes -> delete();
     }
+*/
 }
