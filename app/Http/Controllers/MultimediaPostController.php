@@ -19,6 +19,8 @@ class MultimediaPostController extends Controller
     }
 
     public function SaveMultimedia (Request $request) {
+        return "holiwi";
+        
         $this->validate($request, [
             'fk_id_post' => 'required | exists:posts,id_post',
             'multimedia_file' => 'required | file | mimes:jpeg,png,mp4 | max:2048', // Asumiendo que solo permitimos imágenes y videos con un tamaño máximo de 2MB
