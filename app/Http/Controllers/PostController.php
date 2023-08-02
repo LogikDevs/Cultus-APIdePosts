@@ -46,7 +46,8 @@ class PostController extends Controller
     public function CreatePost(Request $request){
         $validation = [
             'text' => 'nullable | max:255',
-            'location' => 'nullable | max:100'
+            'latitud' => 'nullable | numeric',
+            'longitud' => 'nullable | numeric'
         ];
 
         $request->validate($validation);
@@ -54,9 +55,10 @@ class PostController extends Controller
     }
             private function savePost(Request $request) {
                 $newPost = new Post();
+                $newPost -> fk_id_user = $request->input('id_user');
                 $newPost -> text = $request->input('text');
-                $newPost -> location = $request->input('location');
-                $newPost -> fk_id_user = $request->input('id');
+                $newPost -> latitud = $request->input('latitud');
+                $newPost -> longitud = $request->input('longitud');
                 $newPost -> date = date('d-m-y H:i');
                 $newPost -> save();
             

@@ -18,16 +18,11 @@ class MultimediaPostController extends Controller
         return MultimediaPost::where('fk_id_post', $id_post)->get();
     }
 
-
-
-
-
-
-
-
     public function SaveMultimedia (Request $request) {
+        return "holiwi";
+        
         $this->validate($request, [
-            'fk_id_post' => 'required | exists:posts,id_post',
+            'fk_id_post' => 'required | exists:post,id_post',
             'multimedia_file' => 'required | file | mimes:jpeg,png,mp4 | max:2048', // Asumiendo que solo permitimos imágenes y videos con un tamaño máximo de 2MB
         ]);
 
@@ -45,16 +40,30 @@ class MultimediaPostController extends Controller
         return response()->json($mediaPost, 201);
     }
 
-
-
-
-
-
-
-
-
-
-
+    public function Delete($id_post) {
+        /*
+            $mediaPost = MultimediaPost::findOrFail($id);
+    
+            // Eliminar el archivo multimedia del servidor
+            if (file_exists(public_path($mediaPost->multimediaLink))) {
+                unlink(public_path($mediaPost->multimediaLink));
+            }
+    
+            $mediaPost->delete();
+    
+            return response()->json(null, 204);
+    */
+    
+            $post = MultimediaPost::where('fk_id_post', $id_post)->get();
+            // Eliminar el archivo multimedia del servidor
+            if (file_exists(public_path($post->multimediaLink))) {
+                unlink(public_path($post->multimediaLink));
+            }
+    
+            $post->delete();
+    
+            return response()->json(null, 204);
+        }
 
 /*
     public function update(Request $request, $id) {
@@ -81,12 +90,6 @@ class MultimediaPostController extends Controller
         return response()->json($mediaPost);
     }
 */
-
-
-
-
-
-    public function Delete($id_post) {
     /*
         $mediaPost = MultimediaPost::findOrFail($id);
 
