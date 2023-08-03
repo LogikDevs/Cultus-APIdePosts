@@ -63,7 +63,7 @@ class MultimediaPostController extends Controller
             $post->delete();
     
             return response()->json(null, 204);
-        }
+        
 
 /*
     public function update(Request $request, $id) {
