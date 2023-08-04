@@ -20,7 +20,7 @@ class MultimediaPostController extends Controller
 
     public function SaveMultimedia (Request $request) {
         return "holiwi";
-        
+/*      
         $this->validate($request, [
             'fk_id_post' => 'required | exists:post,id_post',
             'multimedia_file' => 'required | file | mimes:jpeg,png,mp4 | max:2048', // Asumiendo que solo permitimos imágenes y videos con un tamaño máximo de 2MB
@@ -38,6 +38,30 @@ class MultimediaPostController extends Controller
         $mediaPost->save();
 
         return response()->json($mediaPost, 201);
+*/
+/*
+          // Validation
+        $request->validate([
+            'multimedia_file' => 'required | mimes:png,jpg,jpeg,csv,txt,pdf | max:2048'
+        ]);
+    */
+        return $request->file('multimedia_file');
+        if($request->file('multimedia_file')) {
+                $file = $request->file('multimedia_file');
+                $filename = time().'_'.$file->getClientOriginalName();
+                return $filename;
+
+                // File upload location
+                $location = '/public/multimedia_post';
+
+                // Upload file
+                $file->move($location,$filename);
+
+                return "god";
+        }else{
+                return "no muy god";
+        }
+        //return redirect('/');
     }
 
     public function Delete($id_post) {

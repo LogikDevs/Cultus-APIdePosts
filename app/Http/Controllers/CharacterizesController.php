@@ -8,11 +8,6 @@ use Illuminate\Http\Request;
 
 class CharacterizesController extends Controller
 {
-
-    public function ListAllCharacterizes(Request $request) {
-        return Characterizes::all();
-    }
-
     public function ListPostLabels(Request $request, $id_post) {
         return Characterizes::where('fk_id_post', $id_post)->get();
     }
@@ -35,11 +30,4 @@ class CharacterizesController extends Controller
         $characterizes = Characterizes::where('fk_id_post', $id_post)->get();
         $characterizes -> delete();
     }
-
-/*
-    public function Delete(Request $request, $id_characterizes) {
-        $characterizes = Characterizes::findOrFail($id_characterizes);
-        $characterizes -> delete();
-    }
-*/
 }
