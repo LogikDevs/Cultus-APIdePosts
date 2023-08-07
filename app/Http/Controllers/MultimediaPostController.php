@@ -88,4 +88,32 @@ class MultimediaPostController extends Controller
         return response()->json($mediaPost);
     }
 */
+    /*
+        $mediaPost = MultimediaPost::findOrFail($id);
+
+        // Eliminar el archivo multimedia del servidor
+        if (file_exists(public_path($mediaPost->multimediaLink))) {
+            unlink(public_path($mediaPost->multimediaLink));
+        }
+
+        $mediaPost->delete();
+
+        return response()->json(null, 204);
+*/
+
+
+
+
+
+        $post = MultimediaPost::where('fk_id_post', $id_post)->get();
+        // Eliminar el archivo multimedia del servidor
+        if (file_exists(public_path($post->multimediaLink))) {
+            unlink(public_path($post->multimediaLink));
+        }
+
+        $post->delete();
+
+        return response()->json(null, 204);
+    }
+
 }
