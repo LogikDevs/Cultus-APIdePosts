@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Passport\Passport;
 
 class Post extends Model
 {   
+    use SoftDeletes;
     use HasFactory;
     protected $table = "post";
     protected $primaryKey = 'id_post';

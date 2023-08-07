@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Characterizes extends Model
 {
+    use SoftDeletes;
     use HasFactory;
     protected $table = "characterizes";
     protected $primaryKey = 'id_characterizes';
