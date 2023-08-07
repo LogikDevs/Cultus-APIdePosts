@@ -84,8 +84,8 @@ class VotesController extends Controller
         $vote -> delete();
     }
 
-    public function DeletePost($id_post) {
-        $vote = Votes::where('fk_id_post', $id_post)->get();
+    public function DeletePost($id_vote) {
+        $vote = Votes::where('id_vote', $id_vote)->get();
         $vote -> delete();
     }
 }
