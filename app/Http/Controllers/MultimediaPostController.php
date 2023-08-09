@@ -19,8 +19,38 @@ class MultimediaPostController extends Controller
     }
 
     public function SaveMultimedia (Request $request) {
-        return "holiwi";
+            if ($request->hasFile('multimedia_file')) {
+                $image = $request->file('multimedia_file');
+                // Realizar operaciones con la imagen, como guardarla en el servidor
+                // y asociarla al post con el ID proporcionado en el request.
+                // Ejemplo: $image->store('images');
+                
+                return response()->json(['message' => 'Imagen subida correctamente']);
+            } else {
+                return response()->json(['message' => 'no se subio loli']);
+            }
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*      
+
         $this->validate($request, [
             'fk_id_post' => 'required | exists:post,id_post',
             ///'multimedia_file' => 'required | file | mimes:jpeg,png,mp4 | max:2048', // Asumiendo que solo permitimos imágenes y videos con un tamaño máximo de 2MB
@@ -45,6 +75,11 @@ class MultimediaPostController extends Controller
             'multimedia_file' => 'required | mimes:png,jpg,jpeg,csv,txt,pdf | max:2048'
         ]);
     */
+
+
+
+
+    /*
         return $request->file('multimedia_file');
         if($request->file('multimedia_file')) {
                 $file = $request->file('multimedia_file');
@@ -62,6 +97,7 @@ class MultimediaPostController extends Controller
                 return "no muy god";
         }
         //return redirect('/');
+    */
     }
 
     public function Delete($id_post) {
