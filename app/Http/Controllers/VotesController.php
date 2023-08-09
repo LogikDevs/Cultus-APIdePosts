@@ -79,7 +79,11 @@ class VotesController extends Controller
                 $post->save();
             }
 
+<<<<<<< HEAD
     public function DeleteVote (Request $request, $id_vote) {
+=======
+    public function DeleteVote(Request $request, $id_vote) {
+>>>>>>> 51d528ba7dcebb114ed81496eff77cf6bc17f638
         $vote = Votes::findOrFail($id_vote);
         $vote -> delete();
     }
