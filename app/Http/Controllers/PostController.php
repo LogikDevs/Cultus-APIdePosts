@@ -37,27 +37,31 @@ class PostController extends Controller
     }
 
     public function ListAllInterested($id_user) {
-        $route = 'http://localhost:8000/api/v1/likes/user/'.$id_user.'/';
+        $route = 'http://localhost:8000/api/v1/likes/user/' . $id_user . '/';
         $response = Http::get($route);
-
+        
         if ($response->successful()) {
-            $likesData = $response->json();
+            $responseData = $response->json();
+            $interestsData = $responseData['interests'];
             $posts = [];
-    
-            foreach ($likesData as $i) {
-                $fk_id_interest = $i['id_interest'];
+        
+            foreach ($interestsData as $interest) {
+                $fk_id_interest = $interest['id_label'];
                 $int = Characterizes::where('fk_id_label', $fk_id_interest)->get();
-                foreach ($int as $i) {
-                    $postecito = $i['fk_id_post'];
+                foreach ($int as $item) {
+                    $postecito = $item['fk_id_post'];
                     array_push($posts, $postecito);
                 }
             }
-            
+        
             $postsEnteros = [];
-            foreach ($posts as $i) {
-                $a = Post::where('id_post', $i)->get();
-                array_push($postsEnteros, $a->toArray());
+            foreach ($posts as $postId) {
+                $post = Post::find($postId);
+                if ($post) {
+                    array_push($postsEnteros, $post->toArray());
+                }
             }
+        
             return $postsEnteros;
         }
     }
