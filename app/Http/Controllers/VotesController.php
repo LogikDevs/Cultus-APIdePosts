@@ -73,23 +73,14 @@ class VotesController extends Controller
                 }
             }
 
-            private function UpdateVoteCount(Post $post) {
-                $votesCount = $post->votes()->where('vote', true)->count() - $post->votes()->where('vote', false)->count();
-                $post->votes = $votesCount;
-                $post->save();
-            }
-
-<<<<<<< HEAD
-    public function DeleteVote (Request $request, $id_vote) {
-=======
-    public function DeleteVote(Request $request, $id_vote) {
->>>>>>> 51d528ba7dcebb114ed81496eff77cf6bc17f638
+    public function Delete(Request $request, $id_vote) {
         $vote = Votes::findOrFail($id_vote);
         $vote -> delete();
     }
 
-    public function DeletePost($id_post) {
-        $vote = Votes::where('fk_id_post', $id_post)->get();
-        $vote -> delete();
+    private function UpdateVoteCount(Post $post) {
+        $votesCount = $post->votes()->where('vote', true)->count() - $post->votes()->where('vote', false)->count();
+        $post->votes = $votesCount;
+        $post->save();
     }
 }
