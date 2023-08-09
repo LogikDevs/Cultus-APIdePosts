@@ -9,10 +9,6 @@ use Illuminate\Http\Request;
 
 class CommentsController extends Controller
 {
-    public function ListComments(Request $request) {
-        return Comments::all();
-    }
-
     public function ListOwnedComments(Request $request, $id_user) {
         return Comments::where('fk_id_user', $id_user)->get();
     }
@@ -32,37 +28,30 @@ class CommentsController extends Controller
         return $this->saveComment($request);
     }
 
-            private function saveComment(Request $request) {
-                $newComment = new Comments();
-                $newComment -> fk_id_user = $request ->input("fk_id_user");
-                $newComment -> fk_id_post = $request ->input("fk_id_post");
-                $newComment -> text = $request ->input("text");
-                $newComment -> save();
+    private function saveComment(Request $request) {
+        $newComment = new Comments();
+        $newComment -> fk_id_user = $request ->input("fk_id_user");
+        $newComment -> fk_id_post = $request ->input("fk_id_post");
+        $newComment -> text = $request ->input("text");
+        $newComment -> save();
 
-                $this->UpdateCommentCount($request);
-                return $newComment;
-            }
-
-
-
-
-
-
- 
-    public function Delete(Request $request, $id_comment) {
-        $request = Comments::findOrFail($id_comment);
-        $request -> delete();
-
-        //$this->UpdateCommentCount($request);
-        $a = Comments::where('fk_id_post', $request->post("fk_id_post"))->get()->count();
-        return $a;
+        $postId = $request->input('fk_id_post');
+        $this->UpdateCommentCount($postId);
+        return $newComment;
     }
 
+    public function Delete($id_comment) {
+        $comment = Comments::findOrFail($id_comment);
+        $postId = $comment->fk_id_post;
+        $comment -> delete();
+        
+        $this->UpdateCommentCount($postId);
+    }
 
-    private function UpdateCommentCount(Request $request) {
-        $totalComments = Comments::where('fk_id_post', $request->input("fk_id_post"))->get()->count();
-        $post = Post::find($request->input("fk_id_post"));
-        $post -> comments = $totalComments;
-        $post -> save();
+    private function UpdateCommentCount($postId) {
+        $totalComments = Comments::where('fk_id_post', $postId)->count();
+        $post = Post::find($postId);
+        $post->comments = $totalComments;
+        $post->save();
     }
 }
