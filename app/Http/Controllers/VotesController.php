@@ -20,7 +20,7 @@ class VotesController extends Controller
     public function ListPostVotes(Request $request, $id_post) {
         return Votes::where('fk_id_post', $id_post)->get();
     }
-    
+
     public function CreateVote(Request $request) {
         $id_user = $request->input('fk_id_user');
         $id_post = $request->input('fk_id_post');
@@ -31,19 +31,20 @@ class VotesController extends Controller
         $this->UpdateCreateVote($post, $id_user, $vote);
         $this->UpdateVoteCount($post);
     }
-            private function UpdateCreateVote(Post $post, $id_user, $vote) {
-                $existingVote = $post->votes()->where('fk_id_user', $id_user)->first();
+    
+    private function UpdateCreateVote(Post $post, $id_user, $vote) {
+        $existingVote = $post->votes()->where('fk_id_user', $id_user)->first();
 
-                if ($existingVote) {
-                    $existingVote->vote = $vote;
-                    $existingVote->save();
-                } else {
-                    $post->votes()->create([
-                        'vote' => $vote,
-                        'fk_id_user' => $id_user,
-                    ]);
-                }
-            }
+        if ($existingVote) {
+            $existingVote->vote = $vote;
+            $existingVote->save();
+        } else {
+            $post->votes()->create([
+                'vote' => $vote,
+                'fk_id_user' => $id_user,
+            ]);
+        }
+    }
 
     public function Delete(Request $request, $id_vote) {
         $vote = Votes::findOrFail($id_vote);
