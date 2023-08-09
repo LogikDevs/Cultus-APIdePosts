@@ -9,10 +9,6 @@ use Illuminate\Http\Request;
 
 class VotesController extends Controller
 {
-    public function ListAllVotes(Request $request) {
-        return Votes::all();
-    }
-
     public function ListOwnedVotes(Request $request, $id_user) {
         return Votes::where('fk_id_user', $id_user)->get();
     }
