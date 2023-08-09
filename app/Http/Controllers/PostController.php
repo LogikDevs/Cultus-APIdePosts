@@ -16,10 +16,6 @@ use Response;
 
 class PostController extends Controller 
 {
-    public function ListAllPosts(Request $request) {
-        return Post::all();
-    }
-
     public function ListAllFollowed($id_user) {
         $ruta = 'http://localhost:8000/api/v1/followers/'.$id_user;
         $response = Http::get($ruta);
@@ -75,7 +71,7 @@ class PostController extends Controller
 
     public function CreatePost(Request $request){
         $validation = [
-            //'fk_id_user' => 'required | exists:users,id',
+            'fk_id_user' => 'required | exists:users,id',
             'text' => 'nullable | max:255',
             'latitud' => 'nullable | numeric',
             'longitud' => 'nullable | numeric'
@@ -100,6 +96,5 @@ class PostController extends Controller
     public function Delete(Request $request, $id_post) {
         $post = Post::findOrFail($id_post);
         $post -> delete();
-        return "Eliminado con exito.";
     }
 }
