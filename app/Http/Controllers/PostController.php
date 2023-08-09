@@ -44,6 +44,7 @@ class PostController extends Controller
             $responseData = $response->json();
             $interestsData = $responseData['interests'];
             $posts = [];
+            $postsEnteros = [];
         
             foreach ($interestsData as $interest) {
                 $fk_id_interest = $interest['id_label'];
@@ -53,8 +54,6 @@ class PostController extends Controller
                     array_push($posts, $postecito);
                 }
             }
-        
-            $postsEnteros = [];
             foreach ($posts as $postId) {
                 $post = Post::find($postId);
                 if ($post) {
