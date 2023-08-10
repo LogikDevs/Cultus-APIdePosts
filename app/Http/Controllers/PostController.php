@@ -16,6 +16,10 @@ use Response;
 
 class PostController extends Controller 
 {
+    public function ListAllPosts(Request $request) {
+        return Post::all();
+    }
+
     public function ListAllFollowed($id_user) {
         $ruta = 'http://localhost:8000/api/v1/followers/'.$id_user;
         $response = Http::get($ruta);
