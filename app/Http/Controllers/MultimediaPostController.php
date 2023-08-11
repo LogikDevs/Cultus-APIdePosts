@@ -19,6 +19,7 @@ class MultimediaPostController extends Controller
     }
 
     public function SaveMultimedia (Request $request) {
+        /*
             if ($request->hasFile('multimedia_file')) {
                 $image = $request->file('multimedia_file');
                 // Realizar operaciones con la imagen, como guardarla en el servidor
@@ -29,12 +30,39 @@ class MultimediaPostController extends Controller
             } else {
                 return response()->json(['message' => 'no se subio loli']);
             }
-        
+        */
+
+/*
+        $fk_id_post = $request->input('fk_id_post');
+        $multimedia_file = $request->file('multimedia_file');
+
+        // Guardar la imagen en la carpeta 'public/uploads'
+        $path = $multimedia_file->store('public/uploads');
+
+        // Guardar la ruta en la base de datos
+        $multimedia = new MultimediaPost([
+            'fk_id_post' => $fk_id_post,
+            'multimediaLink' => $path
+        ]);
+        $multimedia->save();
+
+        return $multimedia;
+*/
 
 
 
-
-
+        $fk_id_post = $request->input('fk_id_post');
+        $multimedia_file = $request->file('multimedia_file');
+    
+        // Guardar la imagen en la carpeta 'public/uploads'
+        $path = $multimedia_file->store('uploads', 'public');
+       
+        // Guardar la ruta en la base de datos
+        $multimedia = new MultimediaPost([
+            'fk_id_post' => $fk_id_post,
+            'multimediaLink' => $path
+        ]);
+        $multimedia->save();
 
 
 
