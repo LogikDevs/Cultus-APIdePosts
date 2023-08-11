@@ -69,7 +69,10 @@ class VotesController extends Controller
 
     public function Delete(Request $request, $id_vote) {
         $vote = Votes::findOrFail($id_vote);
-        $vote -> delete();
+        $post = $vote->post;
+
+        $vote->delete();
+        $this->UpdateVoteCount($post);
     }
 
     private function UpdateVoteCount(Post $post) {
