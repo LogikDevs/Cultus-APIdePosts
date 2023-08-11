@@ -19,69 +19,22 @@ class MultimediaPostController extends Controller
     }
 
     public function SaveMultimedia (Request $request) {
-        /*
-            if ($request->hasFile('multimedia_file')) {
-                $image = $request->file('multimedia_file');
-                // Realizar operaciones con la imagen, como guardarla en el servidor
-                // y asociarla al post con el ID proporcionado en el request.
-                // Ejemplo: $image->store('images');
-                
-                return response()->json(['message' => 'Imagen subida correctamente']);
-            } else {
-                return response()->json(['message' => 'no se subio loli']);
-            }
-        */
-
-/*
+    /*
+    FUNCIONA TAMBIEN
         $fk_id_post = $request->input('fk_id_post');
         $multimedia_file = $request->file('multimedia_file');
-
-        // Guardar la imagen en la carpeta 'public/uploads'
-        $path = $multimedia_file->store('public/uploads');
-
-        // Guardar la ruta en la base de datos
-        $multimedia = new MultimediaPost([
-            'fk_id_post' => $fk_id_post,
-            'multimediaLink' => $path
-        ]);
-        $multimedia->save();
-
-        return $multimedia;
-*/
-
-
-
-        $fk_id_post = $request->input('fk_id_post');
-        $multimedia_file = $request->file('multimedia_file');
-    
-        // Guardar la imagen en la carpeta 'public/uploads'
         $path = $multimedia_file->store('uploads', 'public');
        
-        // Guardar la ruta en la base de datos
         $multimedia = new MultimediaPost([
             'fk_id_post' => $fk_id_post,
             'multimediaLink' => $path
         ]);
         $multimedia->save();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*      
+    */
 
         $this->validate($request, [
             'fk_id_post' => 'required | exists:post,id_post',
-            ///'multimedia_file' => 'required | file | mimes:jpeg,png,mp4 | max:2048', // Asumiendo que solo permitimos imágenes y videos con un tamaño máximo de 2MB
+            'multimedia_file' => 'required | file | mimes:jpeg,png,mp4 | max:2048', // Asumiendo que solo permitimos imágenes y videos con un tamaño máximo de 2MB
         ]);
 
         $mediaPost = new MultimediaPost();
@@ -96,36 +49,6 @@ class MultimediaPostController extends Controller
         $mediaPost->save();
 
         return response()->json($mediaPost, 201);
-*/
-/*
-          // Validation
-        $request->validate([
-            'multimedia_file' => 'required | mimes:png,jpg,jpeg,csv,txt,pdf | max:2048'
-        ]);
-    */
-
-
-
-
-    /*
-        return $request->file('multimedia_file');
-        if($request->file('multimedia_file')) {
-                $file = $request->file('multimedia_file');
-                $filename = time().'_'.$file->getClientOriginalName();
-                return $filename;
-
-                // File upload location
-                $location = '/public/multimedia_post';
-
-                // Upload file
-                $file->move($location,$filename);
-
-                return "god";
-        }else{
-                return "no muy god";
-        }
-        //return redirect('/');
-    */
     }
 
     public function Delete($id_post) {
@@ -141,60 +64,8 @@ class MultimediaPostController extends Controller
     
             return response()->json(null, 204);
     */
-    
-            $post = MultimediaPost::where('fk_id_post', $id_post)->get();
-            // Eliminar el archivo multimedia del servidor
-            if (file_exists(public_path($post->multimediaLink))) {
-                unlink(public_path($post->multimediaLink));
-            }
-    
-            $post->delete();
-    
-            return response()->json(null, 204);
-        
 
-/*
-    public function update(Request $request, $id) {
-        $this->validate($request, [
-            'fk_id_post' => 'exists:posts,id_post',
-            'multimedia_file' => 'file | mimes:jpeg,png,mp4 | max:2048', // Asumiendo que solo permitimos imágenes y videos con un tamaño máximo de 2MB
-        ]);
-
-        $mediaPost = MultimediaPost::findOrFail($id);
-
-        if ($request->has('fk_id_post')) {
-            $mediaPost->fk_id_post = $request->input('fk_id_post');
-        }
-
-        // Si se proporciona un nuevo archivo multimedia, actualizarlo
-        if ($request->hasFile('multimedia_file')) {
-            $file = $request->file('multimedia_file');
-            $path = $file->store('public/multimedia');
-            $mediaPost->multimediaLink = $path;
-        }
-
-        $mediaPost->save();
-
-        return response()->json($mediaPost);
-    }
-*/
     /*
-        $mediaPost = MultimediaPost::findOrFail($id);
-
-        // Eliminar el archivo multimedia del servidor
-        if (file_exists(public_path($mediaPost->multimediaLink))) {
-            unlink(public_path($mediaPost->multimediaLink));
-        }
-
-        $mediaPost->delete();
-
-        return response()->json(null, 204);
-*/
-
-
-
-
-
         $post = MultimediaPost::where('fk_id_post', $id_post)->get();
         // Eliminar el archivo multimedia del servidor
         if (file_exists(public_path($post->multimediaLink))) {
@@ -205,5 +76,6 @@ class MultimediaPostController extends Controller
 
         return response()->json(null, 204);
     }
-
+    */
+    }
 }
