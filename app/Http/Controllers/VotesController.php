@@ -59,7 +59,6 @@ class VotesController extends Controller
         $this->UpdateCreateVote($post, $id_user, $vote);
         $this->UpdateVoteCount($post);
     }
-
     /*
     private function UpdateCreateVote(Post $post, $id_user, $vote) {
         $existingVote = $post->votes()->where('fk_id_user', $id_user)->first();
@@ -76,25 +75,25 @@ class VotesController extends Controller
     }
 */
 
-private function UpdateCreateVote(Post $post, $id_user, $vote) {
-    $existingVote = $post->votes()
-        ->where('fk_id_user', $id_user)
-        ->withTrashed()//filas con deleted_at no nulo
-        ->first();
+    private function UpdateCreateVote(Post $post, $id_user, $vote) {
+        $existingVote = $post->votes()
+            ->where('fk_id_user', $id_user)
+            ->withTrashed()//filas con deleted_at no nulo
+            ->first();
 
-    if ($existingVote) {
-        if ($existingVote->trashed()) {
-            $existingVote->restore(); //restauro el vote q elimine
+        if ($existingVote) {
+            if ($existingVote->trashed()) {
+                $existingVote->restore(); //restauro el vote q elimine
+            }
+            $existingVote->vote = $vote;
+            $existingVote->save();
+        } else {
+            $post->votes()->create([
+                'vote' => $vote,
+                'fk_id_user' => $id_user,
+            ]);
         }
-        $existingVote->vote = $vote;
-        $existingVote->save();
-    } else {
-        $post->votes()->create([
-            'vote' => $vote,
-            'fk_id_user' => $id_user,
-        ]);
     }
-}
 
     public function Delete(Request $request, $id_vote) {
         $vote = Votes::findOrFail($id_vote);
