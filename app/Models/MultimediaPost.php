@@ -18,5 +18,5 @@ class MultimediaPost extends Model
         return $this->belongsTo(Post::class, "fk_id_post");
     }
 
-    protected $fillable = ['fk_id_post', 'multimedia_file'];
+    protected $fillable = ['fk_id_post', 'multimediaLink'];
 }
