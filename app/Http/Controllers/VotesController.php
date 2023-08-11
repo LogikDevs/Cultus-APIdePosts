@@ -59,7 +59,7 @@ class VotesController extends Controller
         $this->UpdateCreateVote($post, $id_user, $vote);
         $this->UpdateVoteCount($post);
     }
-    /*
+/*
     private function UpdateCreateVote(Post $post, $id_user, $vote) {
         $existingVote = $post->votes()->where('fk_id_user', $id_user)->first();
 

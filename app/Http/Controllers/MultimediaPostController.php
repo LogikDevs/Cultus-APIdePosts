@@ -19,6 +19,7 @@ class MultimediaPostController extends Controller
     }
 
     public function SaveMultimedia (Request $request) {
+        /*
             if ($request->hasFile('multimedia_file')) {
                 $image = $request->file('multimedia_file');
                 // Realizar operaciones con la imagen, como guardarla en el servidor
@@ -29,11 +30,7 @@ class MultimediaPostController extends Controller
             } else {
                 return response()->json(['message' => 'no se subio loli']);
             }
-        
-
-
-
-
+        */
 
 
 
