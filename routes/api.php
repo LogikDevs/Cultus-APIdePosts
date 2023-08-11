@@ -33,6 +33,7 @@ Route::get('/post/listPost/{id_post}', [PostController::class, 'ListOnePost']);
 Route::post('/post/create', [PostController::class, 'CreatePost']);
 Route::post('/post/delete/{id_post}', [PostController::class, 'Delete']);
 
+Route::get('/votes/listAll', [VotesController::class, 'ListAllVotes']);
 Route::get('/votes/listUser/{id_user}', [VotesController::class, 'ListOwnedVotes']);
 Route::get('/votes/listPost/{id_post}', [VotesController::class, 'ListPostVotes']);
 Route::post('/votes/create', [VotesController::class, 'CreateVote']);
@@ -41,7 +42,7 @@ Route::post('/votes/delete/{id_vote}', [VotesController::class, 'Delete']);
 Route::get('/comments/listUser/{id_user}', [CommentsController::class, 'ListOwnedComments']);
 Route::get('/comments/listPost/{id_post}', [CommentsController::class, 'ListPostComments']);
 Route::post('/comments/create', [CommentsController::class, 'CreateComment']);
-Route::post('/comments/delete/{id_vote}', [CommentsController::class, 'Delete']);
+Route::post('/comments/delete/{id_comment}', [CommentsController::class, 'Delete']);
 
 Route::get('/characterizes/listPost/{id_post}', [CharacterizesController::class, 'ListPostLabels']);
 Route::get('/characterizes/listLabel/{id_label}', [CharacterizesController::class, 'ListLabelPosts']);
