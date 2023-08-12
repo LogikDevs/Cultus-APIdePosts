@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\User;
 use App\Models\Votes;
+use App\Models\Comments;
 use App\Models\Characterizes;
 use App\Models\MultimediaPost;
 use App\Http\Controllers\Controller;
@@ -26,104 +27,132 @@ class PostController extends Controller
     }
 
     public function ListAllFollowed($id_user) {
-        $ruta = 'http://localhost:8000/api/v1/followers/'.$id_user;
+/*
+        $ruta = 'http://localhost:8000/api/v1/followeds/'.$id_user;
         $response = Http::get($ruta);
 
         if ($response->successful()) {
             $followersData = $response->json();
             $posts = [];
             foreach ($followersData as $f) {
-                $fk_id_user = $f['id_follower'];
+                $fk_id_user = $f['id_followed'];
+                $followedPosts = $this->ListUserPosts($fk_id_user);
+                //$userData = $this->GetUser($fk_id_user);
+                $followedPosts -> fk_id_user = $followedPosts->user()->get();
+
+                $posts = array_merge($posts, $followedPosts->toArray());
+            }
+            return $posts;
+        }
+*/
+        $ruta = 'http://localhost:8000/api/v1/followeds/'.$id_user;
+        $response = Http::get($ruta);   
+
+        if ($response->successful()) {
+            $followersData = $response->json();
+            $posts = [];
+
+            foreach ($followersData as $f) {
+                $fk_id_user = $f['id_followed'];
                 $followerPosts = $this->ListUserPosts($fk_id_user);
 
-                $posts = array_merge($posts, $followerPosts->toArray());
+                foreach ($followerPosts as $post) {
+                    $user = User::find($post['fk_id_user']);
+                    $post['user'] = $user->only(['name', 'surname']);
+                    $post->makeHidden(['fk_id_user']);
+                    $interests = [];
+
+
+                    $id_post = $post['id_post'];
+                    $all_labels = Characterizes::where('fk_id_post', $id_post)->get();
+                    foreach ($all_labels as $a) {
+                        $fk_id_label = $a['fk_id_label'];
+                        $ruta = 'http://localhost:8000/api/v1/interest/'.$fk_id_label;
+                        $response = Http::get($ruta);
+                        $interests[] = $response['interest'];
+                    }
+                    $post['interests'] = $interests;
+
+
+                    $comments = Comments::where('fk_id_post', $id_post)
+                        ->with('user:id,name,surname')
+                        ->get()
+                        ->map(function ($comment) {
+                            return [
+                                'id_comment' => $comment->id_comment,
+                                'text' => $comment->text,
+                                'user' => $comment->user
+                            ];
+                        });
+
+                    $post['commentsPublished'] = $comments;
+
+
+                    $posts[] = $post;
+                }
             }
             return $posts;
         }
     }
+        
 
 
-/*    
-    public function ListOne(user $user, $id){
-        $User = user::findOrFail($id);
-        $User -> homeland = $User->homeland()->get();
-        $User -> residence = $User->residence()->get();
-        $user->makeHidden(['password']);
-        return $User;
-   }
-*/
+    public function ListAllInterested($id_user) {
+        $route = 'http://localhost:8000/api/v1/likes/user/' . $id_user . '/';
+        $response = Http::get($route);
+    
+        if ($response->successful()) {
+            $responseData = $response->json();
+            $interestsData = $responseData['interests'];
+            $postsWithInterests = [];
+    
+            foreach ($interestsData as $interest) {
+                $fk_id_interest = $interest['id_label'];
+                $int = Characterizes::where('fk_id_label', $fk_id_interest)->get();
+                foreach ($int as $item) {
+                    $postecito = $item['fk_id_post'];
+                    $post = Post::find($postecito);
+                    if ($post) {
+                        $postData = $post->toArray();
+                        $interestName = $interest['interest'];
+    
+                        $comments = Comments::where('fk_id_post', $postecito)
+                            ->with('user:id,name,surname')
+                            ->get()
+                            ->map(function ($comment) {
+                                return [
+                                    'id_comment' => $comment->id_comment,
+                                    'text' => $comment->text,
+                                    'user' => $comment->user
+                                ];
+                            });
 
+                        $multimedia = MultimediaPost::where('fk_id_post', $postecito)
+                            ->get()
+                            ->map(function ($multi) {
+                                return [
+                                    'multimediaLink' => $multi->multimediaLink
+                                ];
+                            });
 
-
-
-
-
-
-
-
-
-
-
-public function ListAllInterested($id_user) {
-    $route = 'http://localhost:8000/api/v1/likes/user/' . $id_user . '/';
-    $response = Http::get($route);
-
-    if ($response->successful()) {
-        $responseData = $response->json();
-        $interestsData = $responseData['interests'];
-        $postsWithInterests = [];
-
-        foreach ($interestsData as $interest) {
-            $fk_id_interest = $interest['id_label'];
-            $int = Characterizes::where('fk_id_label', $fk_id_interest)->get();
-            foreach ($int as $item) {
-                $postecito = $item['fk_id_post'];
-                $post = Post::find($postecito);
-                if ($post) {
-                    // Obtén los datos del post y de las etiquetas de interés
-                    $postData = $post->toArray();
-                    $interestData = $interest; // Puedes ajustar esto según la estructura de los datos
-
-                    // Agrega los datos de las etiquetas de interés al post
-                    if (!isset($postsWithInterests[$postecito])) {
-                        $postsWithInterests[$postecito] = [
-                            'post' => $postData,
-                            'interests' => [$interestData],
-                        ];
-                    } else {
-                        $postsWithInterests[$postecito]['interests'][] = $interestData;
+                        if (!isset($postsWithInterests[$postecito])) {
+                            $postsWithInterests[$postecito] = [
+                                'post' => $postData,
+                                'multimedia' => $multimedia,
+                                'user' => $post->user->only(['name', 'surname']),
+                                'commentsPublished' => $comments,
+                                'interests' => [$interestName],
+                            ];
+                        } else {
+                            $postsWithInterests[$postecito]['interests'][] = $interestName;
+                        }
                     }
                 }
             }
+    
+            return array_values($postsWithInterests);
         }
-
-        return array_values($postsWithInterests);
     }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*
     public function ListAllInterested($id_user) {
@@ -159,15 +188,6 @@ public function ListAllInterested($id_user) {
     public function ListUserPosts($fk_id_user) {
         return Post::where('fk_id_user', $fk_id_user)->get();
     }
-/*
-                        public function GetMultimedia(Request $request) {
-                            return MultimediaPost::findOrFail($request->input('fk_id_user'));
-                        }
-*/
-
-                        public function GetInterests(Request $request) {
-                            return MultimediaPost::findOrFail($request->input('fk_id_post'));
-                        }
 
     public function CreatePost(Request $request){
         $validation = [
