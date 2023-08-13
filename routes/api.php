@@ -25,13 +25,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
+/*
 Route::get('/post/listAll', [PostController::class, 'ListAllPosts']);
-Route::get('/post/listFollowed/{id_user}', [PostController::class, 'ListAllFollowed']);
-Route::get('/post/listInterested/{id_user}', [PostController::class, 'ListAllInterested']);
 Route::get('/post/listUser/{id_user}', [PostController::class, 'ListUserPosts']);
 Route::get('/post/listPost/{id_post}', [PostController::class, 'ListOnePost']);
+*/
+
+
+Route::get('/post/followed/{id_user}', [PostController::class, 'ListAllFollowed']);
+Route::get('/post/interested/{id_user}', [PostController::class, 'ListAllInterested']);
 Route::post('/post/create', [PostController::class, 'CreatePost']);
 Route::post('/post/delete/{id_post}', [PostController::class, 'Delete']);
+
 
 Route::get('/votes/listAll', [VotesController::class, 'ListAllVotes']);
 Route::get('/votes/listUser/{id_user}', [VotesController::class, 'ListOwnedVotes']);
