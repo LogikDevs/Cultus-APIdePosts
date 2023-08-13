@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class MultimediaPost extends Model
 {
-    use SoftDeletes;
     use HasFactory;
+    use SoftDeletes;
     protected $table = "multimedia_post";
     protected $primaryKey = 'id_multimediaPost';
     
@@ -17,6 +16,4 @@ class MultimediaPost extends Model
     public function post() {
         return $this->belongsTo(Post::class, "fk_id_post");
     }
-
-    protected $fillable = ['fk_id_post', 'multimediaLink'];
 }

@@ -6,12 +6,13 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
+    /**
+     * Seed the application's database.
+     *
+     * @return void
+     */
     public function run()
     {
-        $this->call(PostSeeder::class);
-        $this->call(MultimediaPostSeeder::class);
-        $this->call(CharacterizesSeeder::class);
-        $this->call(VotesSeeder::class);
-        $this->call(CommentsSeeder::class);
+        // \App\Models\User::factory(10)->create();
     }
 }
