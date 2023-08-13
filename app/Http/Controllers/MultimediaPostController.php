@@ -34,17 +34,15 @@ class MultimediaPostController extends Controller
 
         $this->validate($request, [
             'fk_id_post' => 'required | exists:post,id_post',
-            'multimedia_file' => 'required | file | mimes:jpeg,png,mp4 | max:2048', // Asumiendo que solo permitimos imágenes y videos con un tamaño máximo de 2MB
+            'multimedia_file' => 'required | file | mimes:jpeg,png,mp4 | max:2048',//imagenes maximo de 2MB
         ]);
 
         $mediaPost = new MultimediaPost();
         $mediaPost->fk_id_post = $request->input('fk_id_post');
 
-        // Subir el archivo multimedia al servidor y obtener su ruta en el sistema de archivos
         $file = $request->file('multimedia_file');
         $path = $file->store('public/multimedia_post');
 
-        // Almacenar la ruta en la base de datos
         $mediaPost->multimediaLink = $path;
         $mediaPost->save();
 

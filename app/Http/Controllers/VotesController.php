@@ -21,34 +21,6 @@ class VotesController extends Controller
         return Votes::where('fk_id_post', $id_post)->get();
     }
 
-/*
-    public function CreateVote(Request $request) {
-        $fk_id_user = $request->input('fk_id_user');
-        $fk_id_post = $request->input('fk_id_post');
-        $vote = $request->input('vote');
-
-        $post = Post::find($fk_id_post);
-
-
-        $existingVote = $post->votes()->where('fk_id_user', $fk_id_user)->first();
-        if ($existingVote) {
-            $existingVote->vote = $request->input('vote');
-            $existingVote->save();
-        } else {
-            $post->votes()->create([
-                'vote' => $request->input('vote'),
-                'fk_id_user' => $fk_id_user,
-            ]);
-        }
-
-        $votesCount = $post->votes()->where('vote', true)->count() - $post->votes()->where('vote', false)->count();
-        $post->votes = $votesCount;
-        $post->save();
-
-        return response()->json(['message' => 'Voto registrado exitosamente']);
-    }
-*/
-
     public function CreateVote(Request $request) {
         $id_user = $request->input('fk_id_user');
         $id_post = $request->input('fk_id_post');
@@ -97,7 +69,10 @@ class VotesController extends Controller
 
     public function Delete(Request $request, $id_vote) {
         $vote = Votes::findOrFail($id_vote);
-        $vote -> delete();
+        $post = $vote->post;
+
+        $vote->delete();
+        $this->UpdateVoteCount($post);
     }
 
     private function UpdateVoteCount(Post $post) {
