@@ -26,74 +26,88 @@ class PostController extends Controller
         return Post::findOrFail($id_post);
     }
 
-    public function ListAllFollowed($id_user) {
-/*
-        $ruta = 'http://localhost:8000/api/v1/followeds/'.$id_user;
-        $response = Http::get($ruta);
+        public function ListAllFollowed($id_user) {
+    /*
+            $ruta = 'http://localhost:8000/api/v1/followeds/'.$id_user;
+            $response = Http::get($ruta);
 
-        if ($response->successful()) {
-            $followersData = $response->json();
-            $posts = [];
-            foreach ($followersData as $f) {
-                $fk_id_user = $f['id_followed'];
-                $followedPosts = $this->ListUserPosts($fk_id_user);
-                //$userData = $this->GetUser($fk_id_user);
-                $followedPosts -> fk_id_user = $followedPosts->user()->get();
+            if ($response->successful()) {
+                $followersData = $response->json();
+                $posts = [];
+                foreach ($followersData as $f) {
+                    $fk_id_user = $f['id_followed'];
+                    $followedPosts = $this->ListUserPosts($fk_id_user);
+                    //$userData = $this->GetUser($fk_id_user);
+                    $followedPosts -> fk_id_user = $followedPosts->user()->get();
 
-                $posts = array_merge($posts, $followedPosts->toArray());
+                    $posts = array_merge($posts, $followedPosts->toArray());
+                }
+                return $posts;
             }
-            return $posts;
-        }
-*/
-        $ruta = 'http://localhost:8000/api/v1/followeds/'.$id_user;
-        $response = Http::get($ruta);   
+    */
+            $ruta = 'http://localhost:8000/api/v1/followeds/'.$id_user;
+            $response = Http::get($ruta);   
 
-        if ($response->successful()) {
-            $followersData = $response->json();
-            $posts = [];
+            if ($response->successful()) {
+                $followersData = $response->json();
+                $posts = [];
 
-            foreach ($followersData as $f) {
-                $fk_id_user = $f['id_followed'];
-                $followerPosts = $this->ListUserPosts($fk_id_user);
+                foreach ($followersData as $f) {
+                    $fk_id_user = $f['id_followed'];
+                    $followerPosts = $this->ListUserPosts($fk_id_user);
 
-                foreach ($followerPosts as $post) {
-                    $user = User::find($post['fk_id_user']);
-                    $post['user'] = $user->only(['name', 'surname']);
-                    $post->makeHidden(['fk_id_user']);
-                    $interests = [];
+                    foreach ($followerPosts as $post) {
+                        $user = User::find($post['fk_id_user']);
+                        $post['user'] = $user->only(['name', 'surname']);
+                        $post->makeHidden(['fk_id_user']);
+                        $interests = [];
 
 
-                    $id_post = $post['id_post'];
-                    $all_labels = Characterizes::where('fk_id_post', $id_post)->get();
-                    foreach ($all_labels as $a) {
-                        $fk_id_label = $a['fk_id_label'];
-                        $ruta = 'http://localhost:8000/api/v1/interest/'.$fk_id_label;
-                        $response = Http::get($ruta);
-                        $interests[] = $response['interest'];
-                    }
-                    $post['interests'] = $interests;
+                        $id_post = $post['id_post'];
+                        $all_labels = Characterizes::where('fk_id_post', $id_post)->get();
+                        foreach ($all_labels as $a) {
+                            $fk_id_label = $a['fk_id_label'];
+                            $ruta = 'http://localhost:8000/api/v1/interest/'.$fk_id_label;
+                            $response = Http::get($ruta);
+                            $interests[] = $response['interest'];
+                        }
+                        $post['interests'] = $interests;
 
 
-                    $comments = Comments::where('fk_id_post', $id_post)
-                        ->with('user:id,name,surname')
+
+                        $multimedia = MultimediaPost::where('fk_id_post', $id_post)
                         ->get()
-                        ->map(function ($comment) {
+                        ->map(function ($multi) {
                             return [
-                                'id_comment' => $comment->id_comment,
-                                'text' => $comment->text,
-                                'user' => $comment->user
+                                'multimediaLink' => $multi->multimediaLink
                             ];
                         });
+                        $post['multimedia'] = $multimedia;
 
-                    $post['commentsPublished'] = $comments;
 
 
-                    $posts[] = $post;
+
+
+                        $comments = Comments::where('fk_id_post', $id_post)
+                            ->with('user:id,name,surname')
+                            ->get()
+                            ->map(function ($comment) {
+                                return [
+                                    'id_comment' => $comment->id_comment,
+                                    'text' => $comment->text,
+                                    'user' => $comment->user
+                                ];
+                            });
+
+                        $post['commentsPublished'] = $comments;
+
+
+                        $posts[] = $post;
+                    }
                 }
+                return $posts;
             }
-            return $posts;
         }
-    }
         
 
 
