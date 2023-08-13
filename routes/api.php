@@ -25,13 +25,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-/*
 Route::get('/post/listAll', [PostController::class, 'ListAllPosts']);
-Route::get('/post/listUser/{id_user}', [PostController::class, 'ListUserPosts']);
+Route::get('/post/listUser/{id_user}', [PostController::class, 'ListAllUserPosts']);
 Route::get('/post/listPost/{id_post}', [PostController::class, 'ListOnePost']);
-*/
-
-
 Route::get('/post/followed/{id_user}', [PostController::class, 'ListAllFollowed']);
 Route::get('/post/interested/{id_user}', [PostController::class, 'ListAllInterested']);
 Route::post('/post/create', [PostController::class, 'CreatePost']);
