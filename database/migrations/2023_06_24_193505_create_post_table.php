@@ -12,10 +12,12 @@ class CreatePostTable extends Migration
         Schema::create('post', function (Blueprint $table) {
             $table->id('id_post');
             $table->unsignedBigInteger('fk_id_user');
-            $table->string('text')->nullable();
-            $table->string('location')->nullable();
+            $table->text('text')->nullable()->max(255);
+            $table->string('latitud')->nullable();
+            $table->string('longitud')->nullable();
             $table->dateTime('date');
             $table->integer("votes")->default(0);
+            $table->integer("comments")->default(0);
             
             $table->foreign('fk_id_user')->references('id')->on('users');
 

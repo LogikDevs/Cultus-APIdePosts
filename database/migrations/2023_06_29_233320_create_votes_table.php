@@ -13,13 +13,12 @@ class CreateVotesTable extends Migration
             $table->id('id_vote');
             $table->unsignedBigInteger('fk_id_user');
             $table->unsignedBigInteger('fk_id_post');
-            $table->boolean('upvote')->default(0);
-            $table->boolean('downvote')->default(0);
+            $table->boolean('vote');
 
-            $table->unique(['fk_id_user','fk_id_post']);
             $table->foreign('fk_id_user')->references('id')->on('users');
             $table->foreign('fk_id_post')->references('id_post')->on('post');
-
+            $table->unique(['fk_id_user','fk_id_post']);
+          
             $table->timestamps();
             $table->softDeletes();
         });
