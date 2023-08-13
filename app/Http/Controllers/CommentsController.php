@@ -30,6 +30,7 @@ class CommentsController extends Controller
     }
 
     private function saveComment(Request $request) {
+    /*
         $newComment = new Comments();
         $newComment -> fk_id_user = $request ->input("fk_id_user");
         $newComment -> fk_id_post = $request ->input("fk_id_post");
@@ -38,8 +39,25 @@ class CommentsController extends Controller
 
         $postId = $request->input('fk_id_post');
         $this->UpdateCommentCount($postId);
-        return $this->GetUser($request);
+        $this->GetUser($request);
         return $newComment;
+    */
+        $newComment = new Comments();
+        $newComment->fk_id_user = $request->input("fk_id_user");
+        $newComment->fk_id_post = $request->input("fk_id_post");
+        $newComment->text = $request->input("text");
+        $newComment->save();
+
+        $postId = $request->input('fk_id_post');
+        $this->UpdateCommentCount($postId);
+        $user = $this->GetUser($request);
+
+        $response = [
+            'comment' => $newComment,
+            'user' => $user,
+        ];
+
+        return $response;
     }
 
     public function Delete($id_comment) {
