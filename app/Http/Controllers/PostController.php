@@ -26,91 +26,221 @@ class PostController extends Controller
         return Post::findOrFail($id_post);
     }
 
-        public function ListAllFollowed($id_user) {
-    /*
-            $ruta = 'http://localhost:8000/api/v1/followeds/'.$id_user;
-            $response = Http::get($ruta);
+    public function ListAllInterested($id_user) {
+        $interestsData = $this->GetInterestsData($id_user);
+        $postsWithInterests = [];
 
-            if ($response->successful()) {
-                $followersData = $response->json();
-                $posts = [];
-                foreach ($followersData as $f) {
-                    $fk_id_user = $f['id_followed'];
-                    $followedPosts = $this->ListUserPosts($fk_id_user);
-                    //$userData = $this->GetUser($fk_id_user);
-                    $followedPosts -> fk_id_user = $followedPosts->user()->get();
+        foreach ($interestsData as $interest) {
+            $int = $this->GetCharacterizedPosts($interest['id_label']);
 
-                    $posts = array_merge($posts, $followedPosts->toArray());
+            foreach ($int as $item) {
+                $post = $this->GetPost($item['fk_id_post']);
+
+                if ($post) {
+                    $postData = $post->toArray();
+                    $interestName = $interest['interest'];
+                    $comments = $this->GetComments($post->id_post);
+                    $multimedia = $this->GetMultimedia($post->id_post);
+
+                    $this->AddPostToResult(
+                        $postsWithInterests,
+                        $post->id_post,
+                        $postData,
+                        $multimedia,
+                        $post->user,
+                        $comments,
+                        $interestName
+                    );
                 }
-                return $posts;
-            }
-    */
-            $ruta = 'http://localhost:8000/api/v1/followeds/'.$id_user;
-            $response = Http::get($ruta);   
-
-            if ($response->successful()) {
-                $followersData = $response->json();
-                $posts = [];
-
-                foreach ($followersData as $f) {
-                    $fk_id_user = $f['id_followed'];
-                    $followerPosts = $this->ListUserPosts($fk_id_user);
-
-                    foreach ($followerPosts as $post) {
-                        $user = User::find($post['fk_id_user']);
-                        $post['user'] = $user->only(['name', 'surname']);
-                        $post->makeHidden(['fk_id_user']);
-                        $interests = [];
-
-
-                        $id_post = $post['id_post'];
-                        $all_labels = Characterizes::where('fk_id_post', $id_post)->get();
-                        foreach ($all_labels as $a) {
-                            $fk_id_label = $a['fk_id_label'];
-                            $ruta = 'http://localhost:8000/api/v1/interest/'.$fk_id_label;
-                            $response = Http::get($ruta);
-                            $interests[] = $response['interest'];
-                        }
-                        $post['interests'] = $interests;
-
-
-
-                        $multimedia = MultimediaPost::where('fk_id_post', $id_post)
-                        ->get()
-                        ->map(function ($multi) {
-                            return [
-                                'multimediaLink' => $multi->multimediaLink
-                            ];
-                        });
-                        $post['multimedia'] = $multimedia;
-
-
-
-
-
-                        $comments = Comments::where('fk_id_post', $id_post)
-                            ->with('user:id,name,surname')
-                            ->get()
-                            ->map(function ($comment) {
-                                return [
-                                    'id_comment' => $comment->id_comment,
-                                    'text' => $comment->text,
-                                    'user' => $comment->user
-                                ];
-                            });
-
-                        $post['commentsPublished'] = $comments;
-
-
-                        $posts[] = $post;
-                    }
-                }
-                return $posts;
             }
         }
+
+        return array_values($postsWithInterests);
+    }
+
+    public function ListAllFollowed($id_user) {
+        $followedsData = $this->GetFollowedsData($id_user);
+        //$followedPosts = [];
+        $followedPosts = collect();
+
+
+        foreach ($followedsData as $f) {
+            $fk_id_user = $f['id_followed'];
+            $followedPosts = $followedPosts->merge($this->ListUserPosts($fk_id_user));
+        }
+
+        $posts = $this->ShowFollowedPosts($followedPosts);
+        return $posts;
+    }
+
+    public function ListAllUserPosts($fk_id_user) {
+        $userPosts = Post::where('fk_id_user', $fk_id_user)->get();
+
+        foreach ($userPosts as &$post) {
+            $user = $this->GetUser($post['fk_id_user']);
+            $interests = $this->GetInterestsFromCharacterizes($post['id_post']);
+            $multimedia = $this->GetMultimedia($post['id_post']);
+            $comments = $this->GetComments($post['id_post']);
+    
+            $post['multimedia'] = $multimedia;
+            $post['interests'] = $interests;
+            $post['user'] = $user;
+            $post['commentsPublished'] = $comments;
+        }
+    
+        return $userPosts;
+    }
+
+    private function GetInterestsData($id_user) {
+        $route = 'http://localhost:8000/api/v1/likes/user/' . $id_user . '/';
+        $response = Http::get($route);
+
+        if ($response->successful()) {
+            return $response->json()['interests'];
+        }
+
+        return [];
+    }
+
+    private function GetCharacterizedPosts($fk_id_label) {
+        return Characterizes::where('fk_id_label', $fk_id_label)->get();
+    }
+
+    private function GetPost($id_post) {
+        return Post::find($id_post);
+    }
+
+    private function GetComments($id_post) {
+        return Comments::where('fk_id_post', $id_post)
+            ->with('user:id,name,surname')
+            ->get()
+            ->map(function ($comment) {
+                return [
+                    'id_comment' => $comment->id_comment,
+                    'text' => $comment->text,
+                    'user' => $comment->user
+                ];
+            });
+    }
+
+    private function GetMultimedia($id_post) {
+/*
+        return MultimediaPost::where('fk_id_post', $id_post)
+            ->get()
+            ->map(function ($multi) {
+                return [
+                    'multimediaLink' => $multi->multimediaLink
+                ];
+            });
+*/
+        return MultimediaPost::where('fk_id_post', $id_post)
+            ->get()
+            ->pluck('multimediaLink')
+            ->toArray();
+    }
+
+    private function AddPostToResult(&$postsWithInterests, $postecito, $postData, $multimedia, $user, $comments, $interestName) {
+        if (!isset($postsWithInterests[$postecito])) {
+            $postsWithInterests[$postecito] = [
+                'post' => $postData,
+                'multimedia' => $multimedia,
+                'interests' => [$interestName],
+                'user' => $user->only(['name', 'surname', 'profile_pic']),
+                'commentsPublished' => $comments,
+            ];
+        } else {
+            $postsWithInterests[$postecito]['interests'][] = $interestName;
+        }
+    }
+
+    private function GetFollowedsData($id_user) {
+        $ruta = 'http://localhost:8000/api/v1/followeds/' . $id_user;
+        $response = Http::get($ruta);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        return [];
+    }
+
+    private function ShowFollowedPosts($followedPosts) {
+        $posts = [];
+
+        foreach ($followedPosts as $post) {
+            $user = $this->GetUser($post['fk_id_user']);
+            $interests = $this->getInterestsFromCharacterizes($post['id_post']);
+            $multimedia = $this->getMultimedia($post['id_post']);
+            $comments = $this->getComments($post['id_post']);
+
+            $post['multimedia'] = $multimedia;
+            $post['interests'] = $interests;
+            $post['user'] = $user;
+            $post['commentsPublished'] = $comments;
+
+            $posts[] = $post;
+        }
+
+        return $posts;
+    }
+
+    private function GetInterestsFromCharacterizes($id_post) {
+        $all_labels = Characterizes::where('fk_id_post', $id_post)->get();
+        $interests = [];
+
+        foreach ($all_labels as $a) {
+            $fk_id_label = $a['fk_id_label'];
+            $ruta = 'http://localhost:8000/api/v1/interest/' . $fk_id_label;
+            $response = Http::get($ruta);
+            $interests[] = $response['interest'];
+        }
+
+        return $interests;
+    }
+        
+    public function ListUserPosts($fk_id_user) {
+        return Post::where('fk_id_user', $fk_id_user)->get();
+    }
+
+    private function GetUser($fk_id_user) {
+        $user = User::find($fk_id_user);
+        return $user->only(['name', 'surname', 'profile_pic']);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
 
-
+/*
     public function ListAllInterested($id_user) {
         $route = 'http://localhost:8000/api/v1/likes/user/' . $id_user . '/';
         $response = Http::get($route);
@@ -167,6 +297,9 @@ class PostController extends Controller
             return array_values($postsWithInterests);
         }
     }
+*/
+
+
 
 /*
     public function ListAllInterested($id_user) {
@@ -199,9 +332,6 @@ class PostController extends Controller
     }
 */
 
-    public function ListUserPosts($fk_id_user) {
-        return Post::where('fk_id_user', $fk_id_user)->get();
-    }
 
     public function CreatePost(Request $request){
         $validation = [
