@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comments;
 use App\Models\Post;
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -37,6 +38,7 @@ class CommentsController extends Controller
 
         $postId = $request->input('fk_id_post');
         $this->UpdateCommentCount($postId);
+        return $this->GetUser($request);
         return $newComment;
     }
 
@@ -53,5 +55,10 @@ class CommentsController extends Controller
         $post = Post::find($postId);
         $post->comments = $totalComments;
         $post->save();
+    }
+
+    private function GetUser(Request $request) {
+        $user = User::find($request ->input("fk_id_user"));
+        return $user->only(['name', 'surname']);
     }
 }
