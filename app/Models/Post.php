@@ -16,7 +16,7 @@ class Post extends Model
     
     
     public function user() {
-        return $this->hasMany(user::class, 'fk_id_user');
+        return $this->belongsTo(user::class, 'fk_id_user');
     }
 
     public function votes() {
@@ -33,7 +33,8 @@ class Post extends Model
 
     protected $fillable = [
         'text',
-        'location'
+        'latitud',
+        'longitud'
     ];
 }
 
