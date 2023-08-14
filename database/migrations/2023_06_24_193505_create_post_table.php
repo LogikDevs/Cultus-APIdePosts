@@ -12,6 +12,7 @@ class CreatePostTable extends Migration
         Schema::create('post', function (Blueprint $table) {
             $table->id('id_post');
             $table->unsignedBigInteger('fk_id_user');
+            $table->unsignedBigInteger('fk_id_event');
             $table->text('text')->nullable()->max(255);
             $table->string('latitud')->nullable();
             $table->string('longitud')->nullable();
@@ -20,6 +21,7 @@ class CreatePostTable extends Migration
             $table->integer("comments")->default(0);
             
             $table->foreign('fk_id_user')->references('id')->on('users');
+            $table->foreign('fk_id_event')->references('id_event')->on('events');
 
             $table->timestamps();
             $table->softDeletes();
