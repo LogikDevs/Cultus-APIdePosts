@@ -19,6 +19,10 @@ class Post extends Model
         return $this->belongsTo(user::class, 'fk_id_user');
     }
 
+    public function event() {
+        return $this->belongsTo(Events::class, 'fk_id_event');
+    }
+
     public function votes() {
         return $this->hasMany(Votes::class, 'fk_id_post');
     }
