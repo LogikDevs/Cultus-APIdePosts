@@ -336,6 +336,7 @@ class PostController extends Controller
     public function CreatePost(Request $request){
         $validation = [
             'fk_id_user' => 'required | exists:users,id',
+            'fk_id_event' => 'required | exists:events,id_event',
             'text' => 'nullable | max:255',
             'latitud' => 'nullable | numeric',
             'longitud' => 'nullable | numeric'
@@ -348,6 +349,7 @@ class PostController extends Controller
     private function savePost(Request $request) {
         $newPost = new Post();
         $newPost -> fk_id_user = $request->input('fk_id_user');
+        $newPost -> fk_id_event = $request->input('fk_id_event');
         $newPost -> text = $request->input('text');
         $newPost -> latitud = $request->input('latitud');
         $newPost -> longitud = $request->input('longitud');
