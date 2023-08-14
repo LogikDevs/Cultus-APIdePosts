@@ -12,6 +12,7 @@ class PostSeeder extends Seeder
     {
         DB::table('post')->insert([
             'fk_id_user' => 1,
+            'fk_id_event' => 1,
             'text' => 'HOLIWI',
             'latitud' => '2352626',
             'longitud' => '57568568',
