@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Post;
 use App\Models\User;
 use App\Models\Votes;
@@ -18,6 +19,32 @@ use Response;
 
 class PostController extends Controller 
 {
+    public function CreatePost(Request $request){
+        $validation = [
+            'fk_id_user' => 'required | exists:users,id',
+            'fk_id_event' => 'nullable | exists:events,id_event',
+            'text' => 'nullable | max:255',
+            'latitud' => 'nullable | numeric',
+            'longitud' => 'nullable | numeric'
+        ];
+
+        $request->validate($validation);
+        return $this->savePost($request);
+    }
+    
+    private function savePost(Request $request) {
+        $newPost = new Post();
+        $newPost -> fk_id_user = $request->input('fk_id_user');
+        $newPost -> fk_id_event = $request->input('fk_id_event');
+        $newPost -> text = $request->input('text');
+        $newPost -> latitud = $request->input('latitud');
+        $newPost -> longitud = $request->input('longitud');
+        $newPost -> date = date('d-m-y H:i');
+        $newPost -> save();
+            
+        return $newPost;
+    }
+
     public function ListAllPosts(Request $request) {
         return Post::all();
     }
@@ -63,12 +90,10 @@ class PostController extends Controller
         //$followedPosts = [];
         $followedPosts = collect();
 
-
         foreach ($followedsData as $f) {
             $fk_id_user = $f['id_followed'];
             $followedPosts = $followedPosts->merge($this->ListUserPosts($fk_id_user));
         }
-
         $posts = $this->ShowFollowedPosts($followedPosts);
         return $posts;
     }
@@ -333,31 +358,6 @@ class PostController extends Controller
 */
 
 
-    public function CreatePost(Request $request){
-        $validation = [
-            'fk_id_user' => 'required | exists:users,id',
-            'fk_id_event' => 'required | exists:events,id_event',
-            'text' => 'nullable | max:255',
-            'latitud' => 'nullable | numeric',
-            'longitud' => 'nullable | numeric'
-        ];
-
-        $request->validate($validation);
-        return $this->savePost($request);
-    }
-    
-    private function savePost(Request $request) {
-        $newPost = new Post();
-        $newPost -> fk_id_user = $request->input('fk_id_user');
-        $newPost -> fk_id_event = $request->input('fk_id_event');
-        $newPost -> text = $request->input('text');
-        $newPost -> latitud = $request->input('latitud');
-        $newPost -> longitud = $request->input('longitud');
-        $newPost -> date = date('d-m-y H:i');
-        $newPost -> save();
-            
-        return $newPost;
-    }
 
     public function Delete(Request $request, $id_post) {
         $post = Post::findOrFail($id_post);
