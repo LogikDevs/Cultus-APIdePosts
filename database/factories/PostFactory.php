@@ -27,7 +27,7 @@ class PostFactory extends Factory
             $event = collect($events)->random();
             return [
                 'fk_id_user' => User::all()->random()->id,
-                'fk_id_event' => $event['id'],            'fk_id_user' => User::all()->random()->id,
+                'fk_id_event' => $event['id'],
                 'text' => $this->faker->paragraph(),
                 'latitud' => $this->faker->latitude(),
                 'longitud' => $this->faker->longitude(),

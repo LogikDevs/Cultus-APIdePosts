@@ -22,7 +22,7 @@ class PostController extends Controller
     public function CreatePost(Request $request){
         $validation = [
             'fk_id_user' => 'required | exists:users,id',
-            'fk_id_event' => 'nullable | exists:events,id_event',
+            'fk_id_event' => 'nullable | exists:events,id',
             'text' => 'nullable | max:255',
             'latitud' => 'nullable | numeric',
             'longitud' => 'nullable | numeric'
