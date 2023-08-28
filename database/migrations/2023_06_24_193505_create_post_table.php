@@ -12,7 +12,7 @@ class CreatePostTable extends Migration
         Schema::create('post', function (Blueprint $table) {
             $table->id('id_post');
             $table->unsignedBigInteger('fk_id_user');
-            $table->unsignedBigInteger('fk_id_event');
+            $table->unsignedBigInteger('fk_id_event')->nullable();
             $table->text('text')->nullable()->max(255);
             $table->string('latitud')->nullable();
             $table->string('longitud')->nullable();
