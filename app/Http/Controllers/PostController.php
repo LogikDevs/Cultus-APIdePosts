@@ -99,20 +99,23 @@ class PostController extends Controller
     }
 
     public function ListAllUserPosts($fk_id_user) {
-        $userPosts = Post::where('fk_id_user', $fk_id_user)->get();
-
-        foreach ($userPosts as &$post) {
-            $user = $this->GetUser($post['fk_id_user']);
-            $interests = $this->GetInterestsFromCharacterizes($post['id_post']);
-            $multimedia = $this->GetMultimedia($post['id_post']);
-            $comments = $this->GetComments($post['id_post']);
-    
-            $post['multimedia'] = $multimedia;
-            $post['interests'] = $interests;
-            $post['user'] = $user;
-            $post['commentsPublished'] = $comments;
-        }
-    
+        $pos = [];
+        $userPosts = [];
+        $posts = Post::where('fk_id_user', $fk_id_user)->get();
+            foreach ($posts as $p) {
+                $user = $this->GetUser($p['fk_id_user']);
+                $interests = $this->GetInterestsFromCharacterizes($p['id_post']);
+                $multimedia = $this->GetMultimedia($p['id_post']);
+                $comments = $this->GetComments($p['id_post']);
+        
+                $pos['post'] = $p;
+                $pos['multimedia'] = $multimedia;
+                $pos['interests'] = $interests;
+                $pos['user'] = $user;
+                $pos['commentsPublished'] = $comments;
+                array_push($userPosts, $pos);
+            }
+        
         return $userPosts;
     }
 
