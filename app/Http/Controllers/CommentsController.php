@@ -6,6 +6,7 @@ use App\Models\Comments;
 use App\Models\Post;
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
 class CommentsController extends Controller
@@ -19,29 +20,19 @@ class CommentsController extends Controller
     }
 
     public function CreateComment(Request $request){
-        $validation = [
+        $validator = Validator::make($request->all(), [
             'fk_id_user' => 'required | exists:users,id',
             'fk_id_post' => 'required | exists:post,id_post',
             'text' => 'required | max:255',
-        ];
-    
-        $request->validate($validation);
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
         return $this->saveComment($request);
     }
 
     private function saveComment(Request $request) {
-    /*
-        $newComment = new Comments();
-        $newComment -> fk_id_user = $request ->input("fk_id_user");
-        $newComment -> fk_id_post = $request ->input("fk_id_post");
-        $newComment -> text = $request ->input("text");
-        $newComment -> save();
-
-        $postId = $request->input('fk_id_post');
-        $this->UpdateCommentCount($postId);
-        $this->GetUser($request);
-        return $newComment;
-    */
         $newComment = new Comments();
         $newComment->fk_id_user = $request->input("fk_id_user");
         $newComment->fk_id_post = $request->input("fk_id_post");
