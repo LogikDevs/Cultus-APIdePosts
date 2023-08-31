@@ -29,6 +29,7 @@ Route::get('/post/listAll', [PostController::class, 'ListAllPosts']);
 Route::get('/post/listUser/{id_user}', [PostController::class, 'ListAllUserPosts']);
 Route::get('/post/listPost/{id_post}', [PostController::class, 'ListOnePost']);
 Route::get('/post/followed/{id_user}', [PostController::class, 'ListAllFollowed']);
+Route::get('/post/interest/{id_user}', [PostController::class, 'ListInterested']);
 Route::get('/post/interested/{id_user}', [PostController::class, 'ListAllInterested']);
 Route::post('/post/create', [PostController::class, 'CreatePost']);
 Route::post('/post/delete/{id_post}', [PostController::class, 'Delete']);
@@ -37,7 +38,7 @@ Route::post('/post/delete/{id_post}', [PostController::class, 'Delete']);
 Route::get('/votes/listAll', [VotesController::class, 'ListAllVotes']);
 Route::get('/votes/listUser/{id_user}', [VotesController::class, 'ListOwnedVotes']);
 Route::get('/votes/listPost/{id_post}', [VotesController::class, 'ListPostVotes']);
-Route::post('/votes/create', [VotesController::class, 'CreateVote']);
+Route::post('/votes/create', [VotesController::class, 'ValidateVote']);
 Route::post('/votes/delete/{id_vote}', [VotesController::class, 'Delete']);
 
 Route::get('/comments/listUser/{id_user}', [CommentsController::class, 'ListOwnedComments']);
@@ -52,5 +53,5 @@ Route::post('/characterizes/delete/{id_characterizes}', [CharacterizesController
 
 Route::get('/multimedia/listAll', [MultimediaPostController::class, 'ListAll']);
 Route::get('/multimedia/listPost/{id_post}', [MultimediaPostController::class, 'ListMultimediaPost']);
-Route::post('/multimedia/create', [MultimediaPostController::class, 'SaveMultimedia']);
+Route::post('/multimedia/create', [MultimediaPostController::class, 'ValidateMultimedia']);
 Route::post('/multimedia/delete/{id_post}', [MultimediaPostController::class, 'Delete']);
