@@ -88,6 +88,48 @@ class PostController extends Controller
     //public function ListInterested($id_user) {
         $posts = [];
         $pos = [];
+        // Obtener el token del encabezado
+        $token = $request->header('Authorization');
+
+        // Verificar si el encabezado "Authorization" está presente
+        if ($token) {
+            // Eliminar el prefijo "Bearer " del token
+            $token = str_replace('Bearer ', '', $token);
+
+            // Ahora puedes trabajar con el token JWT
+            try {
+                $decodedToken = JWTAuth::decode($token);
+                // Realizar acciones basadas en el token, como la autenticación
+                // ...
+            } catch (JWTException $e) {
+                // Manejar errores de autenticación
+                // ...
+            }
+        } else {
+            // Manejar la solicitud sin token o encabezado incorrecto
+            // ...
+        }
+
+        // Resto del código de tu controlador
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         return $this->GetUserInterests($id_user);;
         //$interests = $this->GetUserInterests($id_user);
         return $interests;
