@@ -20,21 +20,31 @@ use Response;
 class PostController extends Controller 
 {
     public function CreatePost(Request $request){
-        $validation = [
-            'fk_id_user' => 'required | exists:users,id',
+        // Obtener el usuario autenticado
+        $user = auth()->user();
+        return $user;
+
+        // Obtener el ID del usuario
+        $userId = $user->id;
+        return 'user: ' . $userId;
+
+
+        $validator = Validator::make($request->all(), [
+            //'fk_id_user' => 'required | exists:users,id',
             'fk_id_event' => 'nullable | exists:events,id',
             'text' => 'nullable | max:255',
             'latitud' => 'nullable | numeric',
             'longitud' => 'nullable | numeric'
-        ];
-
-        $request->validate($validation);
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
         return $this->savePost($request);
     }
     
     private function savePost(Request $request) {
         $newPost = new Post();
-        $newPost -> fk_id_user = $request->input('fk_id_user');
+        //$newPost -> fk_id_user = $request->input('fk_id_user');
         $newPost -> fk_id_event = $request->input('fk_id_event');
         $newPost -> text = $request->input('text');
         $newPost -> latitud = $request->input('latitud');
@@ -52,6 +62,125 @@ class PostController extends Controller
     public function ListOnePost($id_post) {
         return Post::findOrFail($id_post);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function ListInterested(Request $request) {
+        //$id_user = $request->input('fk_id_user');
+    //public function ListInterested($id_user) {
+        $posts = [];
+        $pos = [];
+        return $this->GetUserInterests($id_user);;
+        //$interests = $this->GetUserInterests($id_user);
+        return $interests;
+
+        foreach ($interests as $i) {
+            $postInterests = $this->GetPostInterests($i['id_label']);
+            return $postInterests;
+            foreach ($postInterests as $p) {
+                $post = $this->GetPost($p['fk_id_post']);
+                $posts[$pos[0]['id_post']] = $pos[0];
+                $user = $this->GetUser($pos[0]['id_post']);
+                $interests = $this->GetInterestsFromPost($pos[0]['id']);
+                $posts[$pos[0]['id_post']]['user'] = $user;
+                $posts[$pos[0]['id_post']]['interests'] = $interests;
+            }
+        }
+        $pos = array_values($posts);
+        return $pos;
+    }
+
+    public function GetUserInterests($id_user) {
+        //$route = 'http://localhost:8000/api/v1/likes/user/' . $id_user . '/';
+        $route = 'http://localhost:8000/api/v1/likes/user/' . $id_user . '/';
+        $response = Http::get($route);
+        return $response;
+
+        if ($response->successful()) {
+            return $response->json()['interests'];
+        }
+        return [];
+    }
+
+    public function GetPostInterests($fk_id_label) {
+        return Characterizes::where('fk_id_label', $fk_id_label)->get();
+    }
+
+    private function GetPost($id_post) {
+        return Post::find($id_post);
+    }
+
+    public function GetInterestsFromPost($fk_id_post) {
+        $postInterest = Characterizes::where('fk_id_post', $fk_id_post)->get();
+        $int = [];
+        return $this->GetInterestName($postInterest, $int);
+    }
+
+    public function GetInterestName($postInterest, $int) {
+        foreach ($postInterest as $a) {
+            $fk_id_label = $a['fk_id_label'];
+            $ruta = 'http://localhost:8000/api/v1/interest/' . $fk_id_label;
+            $response = Http::get($ruta);
+            $int[] = $response['interest'];
+        }
+
+        return $int;
+    }
+
+    private function GetUser($fk_id_user) {
+        $user = User::find($fk_id_user);
+        return $user->only(['name', 'surname', 'profile_pic']);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public function ListAllInterested($id_user) {
         $interestsData = $this->GetInterestsData($id_user);
@@ -132,10 +261,6 @@ class PostController extends Controller
 
     private function GetCharacterizedPosts($fk_id_label) {
         return Characterizes::where('fk_id_label', $fk_id_label)->get();
-    }
-
-    private function GetPost($id_post) {
-        return Post::find($id_post);
     }
 
     private function GetComments($id_post) {
@@ -230,10 +355,6 @@ class PostController extends Controller
         return Post::where('fk_id_user', $fk_id_user)->get();
     }
 
-    private function GetUser($fk_id_user) {
-        $user = User::find($fk_id_user);
-        return $user->only(['name', 'surname', 'profile_pic']);
-    }
 
 
 
