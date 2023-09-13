@@ -40,6 +40,9 @@ class PostSeeder extends Seeder
 
     public function run()
     {      
+        $this -> CreateUsers();
+        $this -> CreateEvents();
+        
         DB::table('post')->insert([
             'fk_id_user' => 1,
             'fk_id_event' => 1,
@@ -49,8 +52,6 @@ class PostSeeder extends Seeder
             'date' => date('d-m-y H:i')
         ]);
 
-        $this -> CreateUsers();
-        $this -> CreateEvents();
         Post::factory(10)->create();
     }
 }
