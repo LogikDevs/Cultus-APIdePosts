@@ -11,30 +11,13 @@ class PostFactory extends Factory
 {
     public function definition()
     {
-        /*
-            return [
-                'fk_id_user' => User::all()->random()->id,
-                'text' => $this->faker->paragraph(),
-                'latitud' => $this->faker->latitude(),
-                'longitud' => $this->faker->longitude(),
-                'date' => $this->faker->dateTime()
-            ];
-        */
-
-        $response = Http::get('http://localhost:8003/api/events');
-        if ($response->successful()) {
-            $events = $response->json();
-            $event = collect($events)->random();
-            return [
-                'fk_id_user' => User::all()->random()->id,
-                'fk_id_event' => $event['id'],
-                'text' => $this->faker->paragraph(),
-                'latitud' => $this->faker->latitude(),
-                'longitud' => $this->faker->longitude(),
-                'date' => $this->faker->dateTime()
-            ];
-        } else {
-            return [];
-        }
+        return [
+            'fk_id_user' => random_int(1, 10),
+            'fk_id_event' => random_int(1, 10),
+            'text' => $this->faker->paragraph(),
+            'latitud' => $this->faker->latitude(),
+            'longitud' => $this->faker->longitude(),
+            'date' => $this->faker->dateTime()
+        ];
     }
 }
