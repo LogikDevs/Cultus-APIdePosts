@@ -7,11 +7,19 @@ use App\Models\Post;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 
 class CommentsController extends Controller
 {
-    public function ListOwnedComments(Request $request, $id_user) {
+    public function GetUserId(Request $request) {
+        $tokenHeader = [ "Authorization" => $request -> header("Authorization")];
+        $response = Http::withHeaders($tokenHeader)->get(getenv("API_AUTH_URL") . "/api/v1/validate");
+        return $response['id'];
+    }
+
+    public function ListOwnedComments(Request $request) {
+        $id_user = $this->GetUserId($request);
         return Comments::where('fk_id_user', $id_user)->get();
     }
 
@@ -21,7 +29,6 @@ class CommentsController extends Controller
 
     public function CreateComment(Request $request){
         $validator = Validator::make($request->all(), [
-            'fk_id_user' => 'required | exists:users,id',
             'fk_id_post' => 'required | exists:post,id_post',
             'text' => 'required | max:255',
         ]);
@@ -33,15 +40,16 @@ class CommentsController extends Controller
     }
 
     private function saveComment(Request $request) {
+        $id_user = $this->GetUserId($request);
         $newComment = new Comments();
-        $newComment->fk_id_user = $request->input("fk_id_user");
+        $newComment->fk_id_user = $id_user;
         $newComment->fk_id_post = $request->input("fk_id_post");
         $newComment->text = $request->input("text");
         $newComment->save();
 
         $postId = $request->input('fk_id_post');
         $this->UpdateCommentCount($postId);
-        $user = $this->GetUser($request);
+        $user = $this->GetUser($id_user);
 
         $response = [
             'comment' => $newComment,
@@ -66,8 +74,8 @@ class CommentsController extends Controller
         $post->save();
     }
 
-    private function GetUser(Request $request) {
-        $user = User::find($request ->input("fk_id_user"));
+    private function GetUser($id_user) {
+        $user = User::find($id_user);
         return $user->only(['name', 'surname']);
     }
 }

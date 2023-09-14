@@ -6,15 +6,23 @@ use App\Models\Votes;
 use App\Models\Post;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
 class VotesController extends Controller
 {
+    public function GetUserId(Request $request) {
+        $tokenHeader = [ "Authorization" => $request -> header("Authorization")];
+        $response = Http::withHeaders($tokenHeader)->get(getenv("API_AUTH_URL") . "/api/v1/validate");
+        return $response['id'];
+    }
+
     public function ListAllVotes(Request $request) {
         return Votes::all();
     }
 
-    public function ListOwnedVotes(Request $request, $id_user) {
+    public function ListOwnedVotes(Request $request) {
+        $id_user = $this->GetUserId($request);
         return Votes::where('fk_id_user', $id_user)->get();
     }
 
@@ -24,7 +32,6 @@ class VotesController extends Controller
 
     public function ValidateVote(Request $request) {
         $validator = Validator::make($request->all(), [
-            'fk_id_user'=>'required | exists:users,id',
             'fk_id_post'=>'required | exists:post,id_post',
             'vote'=>'required | boolean'
         ]);
@@ -36,7 +43,7 @@ class VotesController extends Controller
     }
 
     public function CreateVote(Request $request) {
-        $id_user = $request->input('fk_id_user');
+        $id_user = $this->GetUserId($request);
         $id_post = $request->input('fk_id_post');
         $vote = $request->input('vote');
 
