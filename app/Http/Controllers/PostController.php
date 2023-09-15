@@ -30,15 +30,51 @@ class PostController extends Controller
         return Post::all();
     }
     
-    public function ListOnePost($id_post) {
-        return Post::findOrFail($id_post);
+    public function ListOnePost(Request $request, $id_post) {
+        $onePost = [];
+        $tokenHeader = [ "Authorization" => $request -> header("Authorization")];
+        $post = Post::findOrFail($id_post);
+            $user = $this->GetUser($post['fk_id_user']);
+            $multimedia = $this->GetMultimedia($post['id_post']);
+            $interests = $this->GetInterestsFromPost($post['id_post'], $tokenHeader);
+            $comments = $this->GetComments($post['id_post']);
+    
+            $pos['user'] = $user;
+            $pos['post'] = $post;
+            $pos['multimedia'] = $multimedia;
+            $pos['interests'] = $interests;
+            $pos['commentsPublished'] = $comments;
+            array_push($onePost, $pos);
+        return $onePost;
     }
 
-    public function ListAllUserPosts(Request $request) {
+    public function ListOwnedPosts(Request $request) {
         $tokenHeader = [ "Authorization" => $request -> header("Authorization")];
         $id_user = $this->GetUserId($request);
         $pos = [];
         $userPosts = [];
+        $posts = Post::where('fk_id_user', $id_user)->get();
+            foreach ($posts as $p) {
+                $user = $this->GetUser($p['fk_id_user']);
+                $multimedia = $this->GetMultimedia($p['id_post']);
+                $interests = $this->GetInterestsFromPost($p['id_post'], $tokenHeader);
+                $comments = $this->GetComments($p['id_post']);
+        
+                $pos['user'] = $user;
+                $pos['post'] = $p;
+                $pos['multimedia'] = $multimedia;
+                $pos['interests'] = $interests;
+                $pos['commentsPublished'] = $comments;
+                array_push($userPosts, $pos);
+            }
+        
+        return $userPosts;
+    }
+
+    public function ListUserPosts(Request $request, $id_user) {
+        $pos = [];
+        $userPosts = [];
+        $tokenHeader = [ "Authorization" => $request -> header("Authorization")];
         $posts = Post::where('fk_id_user', $id_user)->get();
             foreach ($posts as $p) {
                 $user = $this->GetUser($p['fk_id_user']);
@@ -162,7 +198,7 @@ class PostController extends Controller
 
     private function GetComments($id_post) {
         return Comments::where('fk_id_post', $id_post)
-            ->with('user:id,name,surname')
+            ->with('user:id,name,surname,profile_pic')
             ->get()
             ->map(function ($comment) {
                 return [
