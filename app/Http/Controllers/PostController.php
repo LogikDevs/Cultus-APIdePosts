@@ -258,7 +258,14 @@ class PostController extends Controller
     }
 
     public function Delete(Request $request, $id_post) {
+        $id_user = $this->GetUserId($request);
         $post = Post::findOrFail($id_post);
-        $post -> delete();
+        
+        if ($post['fk_id_user'] == $id_user) {
+            $post -> delete();
+            return response()->json(['mensaje' => 'Eliminado con exito.']);
+        }
+
+        return response()->json(['Error' => 'No puedes eliminar este post ya que no eres el creador.']);
     }
 }

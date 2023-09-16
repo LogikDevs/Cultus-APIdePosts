@@ -37,11 +37,10 @@ Route::prefix('v1')->middleware(Autenticacion::class)->group(function(){
     Route::post('/posts/delete/{id_post}', [PostController::class, 'Delete']);
 
 
-    Route::get('/votes/listAll', [VotesController::class, 'ListAllVotes']);
+    Route::get('/votes', [VotesController::class, 'ListAllVotes']);
     Route::get('/votes/listUser/{id_user}', [VotesController::class, 'ListOwnedVotes']);
     Route::get('/votes/listPost/{id_post}', [VotesController::class, 'ListPostVotes']);
     Route::post('/votes/create', [VotesController::class, 'ValidateVote']);
-    Route::post('/votes/delete/{id_vote}', [VotesController::class, 'Delete']);
 
     Route::get('/comments', [CommentsController::class, 'ListAll']);
     Route::get('/comments/listUser', [CommentsController::class, 'ListOwnedComments']);
