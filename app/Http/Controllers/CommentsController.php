@@ -18,6 +18,10 @@ class CommentsController extends Controller
         return $response['id'];
     }
 
+    public function ListAll(Request $request) {
+        return Comments::all();
+    }
+
     public function ListOwnedComments(Request $request) {
         $id_user = $this->GetUserId($request);
         return Comments::where('fk_id_user', $id_user)->get();
@@ -59,7 +63,20 @@ class CommentsController extends Controller
         return $response;
     }
 
-    public function Delete($id_comment) {
+    public function Delete(Request $request, $id_comment) {
+        $id_user = $this->GetUserId($request);
+        $comment = Comments::findOrFail($id_comment);
+        
+        if ($comment['fk_id_user'] == $id_user) {
+            $comment -> delete();
+            return response()->json(['mensaje' => 'Eliminado con exito.']);
+        }
+
+        return response()->json(['Error' => 'No puedes eliminar este comentario ya que no eres el creador.']);
+
+
+
+
         $comment = Comments::findOrFail($id_comment);
         $postId = $comment->fk_id_post;
         $comment -> delete();
@@ -76,6 +93,6 @@ class CommentsController extends Controller
 
     private function GetUser($id_user) {
         $user = User::find($id_user);
-        return $user->only(['name', 'surname']);
+        return $user->only(['name', 'surname', 'profile_pic']);
     }
 }
