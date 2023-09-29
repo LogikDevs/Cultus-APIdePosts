@@ -59,26 +59,22 @@ class VotesController extends Controller
             ->withTrashed()
             ->first();
 
-        if ($existingVote) {
-            if ($existingVote->trashed()) {
-                $existingVote->restore();
+            if ($existingVote) {
+                if ($existingVote->trashed()) {
+                    $existingVote->restore();
+                }
+                if ($existingVote->vote != $vote) {
+                    $existingVote->vote = $vote;
+                    $existingVote->save();
+                } else {
+                    $existingVote->delete();
+                }
+            } else {
+                $post->votes()->create([
+                    'vote' => $vote,
+                    'fk_id_user' => $id_user,
+                ]);
             }
-            $existingVote->vote = $vote;
-            $existingVote->save();
-        } else {
-            $post->votes()->create([
-                'vote' => $vote,
-                'fk_id_user' => $id_user,
-            ]);
-        }
-    }
-
-    public function Delete(Request $request, $id_vote) {
-        $vote = Votes::findOrFail($id_vote);
-        $post = $vote->post;
-
-        $vote->delete();
-        $this->UpdateVoteCount($post);
     }
 
     private function UpdateVoteCount(Post $post) {

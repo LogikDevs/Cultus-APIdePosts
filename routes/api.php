@@ -28,20 +28,21 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::prefix('v1')->middleware(Autenticacion::class)->group(function(){
     Route::get('/posts', [PostController::class, 'ListAllPosts']);
-    Route::get('/posts/user', [PostController::class, 'ListAllUserPosts']);
-    Route::get('/posts/listPost/{id_post}', [PostController::class, 'ListOnePost']);
+    Route::get('/posts/list/{id_post}', [PostController::class, 'ListOnePost']);
+    Route::get('/posts/user/{id_user}', [PostController::class, 'ListUserPosts']);
+    Route::get('/posts/user', [PostController::class, 'ListOwnedPosts']);
     Route::get('/posts/followed', [PostController::class, 'ListFollowed']);
     Route::get('/posts/interested', [PostController::class, 'ListInterested']);
     Route::post('/posts/create', [PostController::class, 'CreatePost']);
     Route::post('/posts/delete/{id_post}', [PostController::class, 'Delete']);
 
 
-    Route::get('/votes/listAll', [VotesController::class, 'ListAllVotes']);
+    Route::get('/votes', [VotesController::class, 'ListAllVotes']);
     Route::get('/votes/listUser/{id_user}', [VotesController::class, 'ListOwnedVotes']);
     Route::get('/votes/listPost/{id_post}', [VotesController::class, 'ListPostVotes']);
     Route::post('/votes/create', [VotesController::class, 'ValidateVote']);
-    Route::post('/votes/delete/{id_vote}', [VotesController::class, 'Delete']);
 
+    Route::get('/comments', [CommentsController::class, 'ListAll']);
     Route::get('/comments/listUser', [CommentsController::class, 'ListOwnedComments']);
     Route::get('/comments/listPost/{id_post}', [CommentsController::class, 'ListPostComments']);
     Route::post('/comments/create', [CommentsController::class, 'CreateComment']);
