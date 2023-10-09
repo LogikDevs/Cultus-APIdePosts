@@ -67,7 +67,12 @@ class PostController extends Controller
                 $pos['commentsPublished'] = $comments;
                 array_push($userPosts, $pos);
             }
-        
+
+            
+        usort($userPosts, function($a, $b) {
+            return strtotime($b['post']['date']) - strtotime($a['post']['date']);
+        });
+
         return $userPosts;
     }
 
@@ -90,6 +95,11 @@ class PostController extends Controller
                 array_push($userPosts, $pos);
             }
         
+
+        usort($userPosts, function($a, $b) {
+            return strtotime($b['post']['date']) - strtotime($a['post']['date']);
+        });
+
         return $userPosts;
     }
 
@@ -117,6 +127,10 @@ class PostController extends Controller
             }
         }
 
+        usort($followedPosts, function($a, $b) {
+            return strtotime($b['post']['date']) - strtotime($a['post']['date']);
+        });
+
         return $followedPosts;
     }
 
@@ -129,6 +143,7 @@ class PostController extends Controller
         $posts = [];
         $userInterests = $this->GetUserInterests($request, $id_user);
 
+    /*
         foreach ($userInterests as $i) {
             $postInterests = $this->GetPostInterests($i['id_label']);
             foreach ($postInterests as $p) {
@@ -147,6 +162,37 @@ class PostController extends Controller
                 array_push($posts, $post);
             }
         }
+        return $posts;
+    */
+
+        
+        $twoWeeksAgo = now()->subDays(30);
+
+        foreach ($userInterests as $i) {
+            $postInterests = $this->GetPostInterests($i['id_label']);
+            foreach ($postInterests as $p) {
+                $post = Post::where('id_post', $p['fk_id_post'])
+                    ->where('date', '>=', $twoWeeksAgo)
+                    ->orderBy('votes', 'desc')
+                    ->first();
+
+                if ($post) {
+                    $user = $this->GetUser($post->fk_id_user);
+                    $multimedia = $this->GetMultimedia($post->id);
+                    $interests = $this->GetInterestsFromPost($post->id, $tokenHeader);
+                    $comments = $this->GetComments($post->id);
+
+                    $postInfo['user'] = $user;
+                    $postInfo['post'] = $post;
+                    $postInfo['multimedia'] = $multimedia;
+                    $postInfo['interests'] = $interests;
+                    $postInfo['commentsPublished'] = $comments;
+
+                    array_push($posts, $postInfo);
+                }
+            }
+        }
+
         return $posts;
     }
 
