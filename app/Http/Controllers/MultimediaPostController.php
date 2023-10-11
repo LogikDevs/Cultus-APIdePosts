@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MultimediaPost;
 use App\Models\Post;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
@@ -31,6 +32,7 @@ class MultimediaPostController extends Controller
     }
 
     public function SaveMultimedia (Request $request) {
+    /*
         $mediaPost = new MultimediaPost();
         if ($request->hasFile('multimedia_file')){
             $image = $request->file('multimedia_file');
@@ -42,5 +44,24 @@ class MultimediaPostController extends Controller
         $mediaPost -> save();
 
         return response()->json($mediaPost, 201);
+    */
+
+        $file = $request->file('multimedia_file');
+
+        $originalName = $file->getClientOriginalName();
+        $fileExtension = $file->getClientOriginalExtension();
+        $fileSize = $file->getSize();
+        $mimeType = $file->getMimeType();
+
+    
+        $fileName = Str::random(50) . "." . $fileExtension;
+        $destinationPath = 'multimedia_post';
+        $file->move($destinationPath,$fileName);
+
+        $imagen = new MultimediaPost();
+        $imagen -> multimediaLink = $fileName;
+        $imagen -> fk_id_post = $request->input('fk_id_post');
+            
+        $imagen -> save();
     }
 }
