@@ -35,7 +35,7 @@ class MultimediaPostController extends Controller
         if ($request->hasFile('multimedia_file')){
             $image = $request->file('multimedia_file');
             $imageExtension = $image->getClientOriginalExtension();
-            $path = $image->store('/public/multimedia_post');
+            $path = $image->store('multimedia_post');
             $mediaPost -> multimediaLink = basename($path);
         }
         $mediaPost -> fk_id_post = $request->input('fk_id_post');
