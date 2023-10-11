@@ -142,7 +142,6 @@ class PostController extends Controller
         $post = [];
         $posts = [];
         $userInterests = $this->GetUserInterests($request, $id_user);
-
     /*
         foreach ($userInterests as $i) {
             $postInterests = $this->GetPostInterests($i['id_label']);
@@ -172,7 +171,7 @@ class PostController extends Controller
             $postInterests = $this->GetPostInterests($i['id_label']);
             foreach ($postInterests as $p) {
                 $post = Post::where('id_post', $p['fk_id_post'])
-                    ->where('date', '>=', $twoWeeksAgo)
+                    ->where('created_at', '>=', $twoWeeksAgo)
                     ->orderBy('votes', 'desc')
                     ->first();
 
@@ -198,7 +197,7 @@ class PostController extends Controller
 
     private function GetFollowedsUsers($request) {
         $id_user = $this->GetUserId($request);
-        $route = getenv("API_AUTH_URL") . "/api/v1/followeds/$id_user";
+        $route = getenv("API_AUTH_URL") . "/api/v1/followeds";
         $tokenHeader = [ "Authorization" => $request->header("Authorization")];
         $response = Http::withHeaders($tokenHeader)->get($route);
 
@@ -256,7 +255,7 @@ class PostController extends Controller
     }
 
     public function GetUserInterests(Request $request, $id_user) {
-        $route = getenv("API_AUTH_URL") . "/api/v1/likes/user/$id_user";
+        $route = getenv("API_AUTH_URL") . "/api/v1/likes/user";
         $tokenHeader = [ "Authorization" => $request->header("Authorization")];
         $response = Http::withHeaders($tokenHeader)->get($route);
 
