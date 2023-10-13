@@ -176,10 +176,10 @@ class PostController extends Controller
                     ->first();
 
                 if ($post) {
-                    $user = $this->GetUser($post->fk_id_user);
-                    $multimedia = $this->GetMultimedia($post->id);
-                    $interests = $this->GetInterestsFromPost($post->id, $tokenHeader);
-                    $comments = $this->GetComments($post->id);
+                    $user = $this->GetUser($post['fk_id_user']);
+                    $multimedia = $this->GetMultimedia($post['id_post']);
+                    $interests = $this->GetInterestsFromPost($post['id_post'], $tokenHeader);
+                    $comments = $this->GetComments($post['id_post']);
 
                     $postInfo['user'] = $user;
                     $postInfo['post'] = $post;
