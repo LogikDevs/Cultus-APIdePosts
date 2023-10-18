@@ -31,6 +31,7 @@ Route::prefix('v1')->middleware(Autenticacion::class)->group(function(){
     Route::get('/posts/list/{id_post}', [PostController::class, 'ListOnePost']);
     Route::get('/posts/user/{id_user}', [PostController::class, 'ListUserPosts']);
     Route::get('/posts/user', [PostController::class, 'ListOwnedPosts']);
+    Route::get('/posts/event/{id_event}', [PostController::class, 'GetPostFromEvent']);
     Route::get('/posts/followed', [PostController::class, 'ListFollowed']);
     Route::get('/posts/interested', [PostController::class, 'ListInterested']);
     Route::post('/posts/create', [PostController::class, 'CreatePost']);
