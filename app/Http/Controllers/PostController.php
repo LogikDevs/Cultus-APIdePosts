@@ -228,7 +228,11 @@ class PostController extends Controller
         return Post::find($id_post);
     }
 
-
+    public function GetPostFromEvent($fk_id_event) {
+        return Post::where('fk_id_event', $fk_id_event)
+            ->with('user:id,name,surname,profile_pic')
+            ->get();
+    }
 
     public function CreatePost(Request $request){
         $id_user = $this->GetUserId($request);
