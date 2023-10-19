@@ -42,6 +42,12 @@ class CharacterizesSeeder extends Seeder
     {
         $this -> CreatePosts();
         $this -> CreateInterests();
+
+        DB::table('characterizes')->insert([
+            'fk_id_label' => 1,
+            'fk_id_post' => 1
+        ]);
+
         Characterizes::factory(10)->create();
     }
 }
