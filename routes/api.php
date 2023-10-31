@@ -56,6 +56,6 @@ Route::prefix('v1')->middleware(Autenticacion::class)->group(function(){
 
     Route::get('/multimedia/listAll', [MultimediaPostController::class, 'ListAll']);
     Route::get('/multimedia/listPost/{id_post}', [MultimediaPostController::class, 'ListMultimediaPost']);
-    Route::post('/multimedia/create', [MultimediaPostController::class, 'ValidateMultimedia']);
+    Route::post('/multimedia/create', [MultimediaPostController::class, 'ValidateRequest']);
     Route::post('/multimedia/delete/{id_post}', [MultimediaPostController::class, 'Delete']);
 });
