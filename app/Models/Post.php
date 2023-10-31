@@ -38,9 +38,7 @@ class Post extends Model
     protected $fillable = [
         'text',
         'latitud',
-        'longitud',
-        'comments',
-        'votes'
+        'longitud'
     ];
 }
 
