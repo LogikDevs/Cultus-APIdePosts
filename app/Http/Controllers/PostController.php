@@ -20,10 +20,14 @@ use Response;
 class PostController extends Controller 
 {
 
-    public function GetUserId(Request $request) {
+    public function GetUser(Request $request) {
         $tokenHeader = [ "Authorization" => $request -> header("Authorization")];
-        $response = Http::withHeaders($tokenHeader)->get(getenv("API_AUTH_URL") . "/api/v1/validate");
-        return $response['id'];
+        return Http::withHeaders($tokenHeader)->get(getenv("API_AUTH_URL") . "/api/v1/validate");
+    }
+
+    private function GetUserData($fk_id_user) {
+        $user = User::find($fk_id_user);
+        return $user->only(['name', 'surname', 'profile_pic']);
     }
 
     public function ListAllPosts(Request $request) {
@@ -31,110 +35,105 @@ class PostController extends Controller
     }
     
     public function ListOnePost(Request $request, $id_post) {
-        $onePost = [];
         $tokenHeader = [ "Authorization" => $request -> header("Authorization")];
-        $post = Post::findOrFail($id_post);
-            $user = $this->GetUser($post['fk_id_user']);
-            $multimedia = $this->GetMultimedia($post['id_post']);
-            $interests = $this->GetInterestsFromPost($post['id_post'], $tokenHeader);
-            $comments = $this->GetComments($post['id_post']);
-    
-            $pos['user'] = $user;
-            $pos['post'] = $post;
-            $pos['multimedia'] = $multimedia;
-            $pos['interests'] = $interests;
-            $pos['commentsPublished'] = $comments;
-            array_push($onePost, $pos);
-        return $onePost;
+        $postToList = Post::findOrFail($id_post);
+        return $this->GetPostDetails($tokenHeader, $postToList);
     }
 
-    public function ListOwnedPosts(Request $request) {
-        $tokenHeader = [ "Authorization" => $request -> header("Authorization")];
-        $id_user = $this->GetUserId($request);
-        $pos = [];
-        $userPosts = [];
-        $posts = Post::where('fk_id_user', $id_user)->get();
-            foreach ($posts as $p) {
-                $user = $this->GetUser($p['fk_id_user']);
-                $multimedia = $this->GetMultimedia($p['id_post']);
-                $interests = $this->GetInterestsFromPost($p['id_post'], $tokenHeader);
-                $comments = $this->GetComments($p['id_post']);
-        
-                $pos['user'] = $user;
-                $pos['post'] = $p;
-                $pos['multimedia'] = $multimedia;
-                $pos['interests'] = $interests;
-                $pos['commentsPublished'] = $comments;
-                array_push($userPosts, $pos);
-            }
+    public function GetPostDetails($tokenHeader, $postToList) {
+        $post['user'] = $this->GetUserData($postToList['fk_id_user']);
+        $post['post'] = $postToList;
+        $post['multimedia'] = $this->GetMultimedia($postToList['id_post']);
+        $post['interests'] = $this->GetInterestsFromPost($postToList['id_post'], $tokenHeader);
+        $post['comments'] = $this->GetComments($postToList['id_post']);
 
-            
-        usort($userPosts, function($a, $b) {
-            return strtotime($b['post']['date']) - strtotime($a['post']['date']);
-        });
+        return $post;
+    }
 
-        return $userPosts;
+    private function GetMultimedia($id_post) {
+        return MultimediaPost::where('fk_id_post', $id_post)
+            ->get();
+            //->pluck('multimediaLink')
+            //->toArray();
     }
 
     public function ListUserPosts(Request $request, $id_user) {
-        $pos = [];
-        $userPosts = [];
         $tokenHeader = [ "Authorization" => $request -> header("Authorization")];
-        $posts = Post::where('fk_id_user', $id_user)->get();
-            foreach ($posts as $p) {
-                $user = $this->GetUser($p['fk_id_user']);
-                $multimedia = $this->GetMultimedia($p['id_post']);
-                $interests = $this->GetInterestsFromPost($p['id_post'], $tokenHeader);
-                $comments = $this->GetComments($p['id_post']);
-        
-                $pos['user'] = $user;
-                $pos['post'] = $p;
-                $pos['multimedia'] = $multimedia;
-                $pos['interests'] = $interests;
-                $pos['commentsPublished'] = $comments;
-                array_push($userPosts, $pos);
-            }
-        
+        $userPosts = Post::where('fk_id_user', $id_user)->get();
+        foreach ($userPosts as $u) {
+            $postData = $this->GetPostDetails($tokenHeader, $u);
+            $posts[] = $postData;
+        }
 
-        usort($userPosts, function($a, $b) {
+        return $this->SortPostsByMostRecentDate($posts);
+    }
+
+    private function SortPostsByMostRecentDate($posts) {
+        usort($posts, function($a, $b) {
             return strtotime($b['post']['date']) - strtotime($a['post']['date']);
         });
 
-        return $userPosts;
+        return $posts;
     }
 
     public function ListFollowed(Request $request) {
-        $tokenHeader = [ "Authorization" => $request -> header("Authorization")];
-        $post = [];
-        $followedPosts = [];
+        $posts = [];
         $followeds = $this->GetFollowedsUsers($request);
-
         foreach ($followeds as $f) {
-            $fk_id_user = $f['id_followed'];
-            $userPosts = $this->GetUserPosts($fk_id_user);
-            foreach ($userPosts as $p) {
-                $user = $this->GetUser($p['fk_id_user']);
-                $multimedia = $this->GetMultimedia($p['id_post']);
-                $interests = $this->GetInterestsFromPost($p['id_post'], $tokenHeader);
-                $comments = $this->GetComments($p['id_post']);
-                
-                $post['user'] = $user;
-                $post['post'] = $p;
-                $post['multimedia'] = $multimedia;
-                $post['interests'] = $interests;
-                $post['commentsPublished'] = $comments;
-                array_push($followedPosts, $post);
-            }
+            $userPosts = $this->ListUserPosts($request, $f['id_followed']);
+            $posts = array_merge($posts, $userPosts);
         }
 
-        usort($followedPosts, function($a, $b) {
-            return strtotime($b['post']['date']) - strtotime($a['post']['date']);
-        });
-
-        return $followedPosts;
+        return $this->SortPostsByMostRecentDate($posts);
     }
 
     public function ListInterested(Request $request) {
+        $posts = [];
+        $user = $this->GetUser($request);
+
+        $userInterests = $this->GetUserInterests($request, $user['id']);
+        //return $userInterests;
+
+        foreach ($userInterests as $u) {
+            $postInterests = $this->GetPostInterests($u['id_label']);
+            //$posts = array_merge($posts, $postInterests);
+            //$posts[] = $postInterests;
+            foreach ($postInterests as $p) {
+                $posts30Days = $this->GetPostsFromMonthAgoToToday($p);
+                return $posts30Days;
+                $posts[] = $posts30Days;
+            }
+    /*
+            foreach ($postInterests as $p) {
+                $posts30Days = $this->GetPostsFromMonthAgoToToday($p);
+                $posts[] = $posts30Days;
+            }
+    */
+            //return $postInterests;
+        }
+
+        return $posts;
+    }
+
+    private function GetPostsFromMonthAgoToToday($p) {
+        $month = now()->subDays(30);
+        return Post::where('id_post', $p['fk_id_post'])
+        ->where('created_at', '>=', $month)
+        ->orderBy('votes', 'desc')
+        ->first();
+    }
+
+    public function GetPostInterests($fk_id_label) {
+        return Characterizes::where('fk_id_label', $fk_id_label)->get();
+    }
+
+
+
+
+
+        /////////////////////////////////////////////////
+
+/*
         $tokenHeader = [ "Authorization" => $request -> header("Authorization")];
         $response = Http::withHeaders($tokenHeader)->get(getenv("API_AUTH_URL") . "/api/v1/validate");
         $id_user = $response['id'];
@@ -162,7 +161,7 @@ class PostController extends Controller
             }
         }
         return $posts;
-    */
+    /
 
         
         $twoWeeksAgo = now()->subDays(30);
@@ -194,9 +193,10 @@ class PostController extends Controller
 
         return $posts;
     }
+*/
 
     private function GetFollowedsUsers($request) {
-        $id_user = $this->GetUserId($request);
+        //$user = $this->GetUser($request);
         $route = getenv("API_AUTH_URL") . "/api/v1/followeds";
         $tokenHeader = [ "Authorization" => $request->header("Authorization")];
         $response = Http::withHeaders($tokenHeader)->get($route);
@@ -210,18 +210,6 @@ class PostController extends Controller
 
     public function GetUserPosts($fk_id_user) {
         return Post::where('fk_id_user', $fk_id_user)->get();
-    }
-
-    private function GetUser($fk_id_user) {
-        $user = User::find($fk_id_user);
-        return $user->only(['name', 'surname', 'profile_pic']);
-    }
-    
-    private function GetMultimedia($id_post) {
-        return MultimediaPost::where('fk_id_post', $id_post)
-            ->get()
-            ->pluck('multimediaLink')
-            ->toArray();
     }
 
     public function GetInterestsFromPost($fk_id_post, $tokenHeader) {
@@ -265,10 +253,6 @@ class PostController extends Controller
         return [];
     }
 
-    public function GetPostInterests($fk_id_label) {
-        return Characterizes::where('fk_id_label', $fk_id_label)->get();
-    }
-
     private function GetPost($id_post) {
         return Post::find($id_post);
     }
@@ -280,7 +264,7 @@ class PostController extends Controller
     }
 
     public function CreatePost(Request $request){
-        $id_user = $this->GetUserId($request);
+        $user = $this->GetUserId($request);
         $validator = Validator::make($request->all(), [
             'fk_id_event' => 'nullable | exists:events,id',
             'text' => 'nullable | max:255',
@@ -290,7 +274,7 @@ class PostController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
-        return $this->savePost($request, $id_user);
+        return $this->savePost($request, $user['id']);
     }
 
     private function savePost(Request $request, $id_user) {
