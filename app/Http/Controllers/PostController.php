@@ -90,17 +90,39 @@ class PostController extends Controller
     public function ListInterested(Request $request) {
         $posts = [];
         $user = $this->GetUser($request);
+        //return $user;
 
         $userInterests = $this->GetUserInterests($request, $user['id']);
         //return $userInterests;
+
+        //$postsWithoutData = $this->GetPosts($request, $user['id']);
+
+
+
+
+
+
 
         foreach ($userInterests as $u) {
             $postInterests = $this->GetPostInterests($u['id_label']);
             //$posts = array_merge($posts, $postInterests);
             //$posts[] = $postInterests;
+            //echo $postInterests;
+            foreach ($postInterests as $p) {
+                //$post = $this->GetPost($p['fk_id_post']);
+                $post = $this->GetPostsFromMonthAgoToToday($p['fk_id_post']);
+
+                //echo $post;
+                if ($post) {
+                    
+                    $posts[] = $post;
+                }
+                //return $post;
+            }
+    /*
             foreach ($postInterests as $p) {
                 $posts30Days = $this->GetPostsFromMonthAgoToToday($p);
-                return $posts30Days;
+                //return $posts30Days;
                 $posts[] = $posts30Days;
             }
     /*
@@ -115,10 +137,10 @@ class PostController extends Controller
         return $posts;
     }
 
-    private function GetPostsFromMonthAgoToToday($p) {
+    private function GetPostsFromMonthAgoToToday($id_post) {
         $month = now()->subDays(30);
-        return Post::where('id_post', $p['fk_id_post'])
-        ->where('created_at', '>=', $month)
+        return Post::where('id_post', $id_post)
+        ->where('date', '>=', $month)
         ->orderBy('votes', 'desc')
         ->first();
     }
@@ -254,7 +276,7 @@ class PostController extends Controller
     }
 
     private function GetPost($id_post) {
-        return Post::find($id_post);
+        return Post::findOrFail($id_post);
     }
 
     public function GetPostFromEvent($fk_id_event) {
