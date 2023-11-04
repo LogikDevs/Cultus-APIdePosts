@@ -95,7 +95,8 @@ class PostController extends Controller
         //return $userInterests;
 
         foreach ($userInterests as $u) {
-            $postInterests = $this->GetPostInterests($u['id_label']);
+            $postInterested = $this->GetPostInterests($u['id_label']);
+            //echo $postInterested;
             //$posts = array_merge($posts, $postInterests);
             //$posts[] = $postInterests;
             foreach ($postInterests as $p) {

@@ -11,10 +11,8 @@ use Illuminate\Support\Facades\Validator;
 
 class VotesController extends Controller
 {
-    public function GetUserId(Request $request) {
-        $tokenHeader = [ "Authorization" => $request -> header("Authorization")];
-        $response = Http::withHeaders($tokenHeader)->get(getenv("API_AUTH_URL") . "/api/v1/validate");
-        return $response['id'];
+    public function GetUserLogged(Request $request) {
+        return $request->input('user');
     }
 
     public function ListAllVotes(Request $request) {
@@ -22,8 +20,8 @@ class VotesController extends Controller
     }
 
     public function ListOwnedVotes(Request $request) {
-        $id_user = $this->GetUserId($request);
-        return Votes::where('fk_id_user', $id_user)->get();
+        $user = $this->GetUserLogged($request);
+        return Votes::where('fk_id_user', $user['id'])->get();
     }
 
     public function ListPostVotes(Request $request, $id_post) {
@@ -31,51 +29,70 @@ class VotesController extends Controller
     }
 
     public function ValidateVote(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'fk_id_post'=>'required | exists:post,id_post',
-            'vote'=>'required | boolean'
-        ]);
+        $validator = $this->ValidateData($request);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
+
         return $this->CreateVote($request);
     }
 
+    public function ValidateData(Request $request) {
+        return Validator::make($request->all(), [
+            'fk_id_post'=>'required | exists:post,id_post',
+            'vote'=>'required | boolean'
+        ]);
+    }
+
     public function CreateVote(Request $request) {
-        $id_user = $this->GetUserId($request);
-        $id_post = $request->input('fk_id_post');
-        $vote = $request->input('vote');
+        $user = $this->GetUserLogged($request);
+        $post = Post::find($request['fk_id_post']);
 
-        $post = Post::find($id_post);
-
-        $this->UpdateCreateVote($post, $id_user, $vote);
+        return $this->UpdateCreateVote($post, $user['id'], $request['vote']);
         $this->UpdateVoteCount($post);
     }
 
     private function UpdateCreateVote(Post $post, $id_user, $vote) {
         $existingVote = $post->votes()
             ->where('fk_id_user', $id_user)
-            ->withTrashed()
+            //->withTrashed()
             ->first();
+            
+        if ($existingVote) {
+            return $this->RestoreVote($existingVote, $post, $id_user, $vote);
+        }
 
-            if ($existingVote) {
-                if ($existingVote->trashed()) {
-                    $existingVote->restore();
-                }
-                if ($existingVote->vote != $vote) {
-                    $existingVote->vote = $vote;
-                    $existingVote->save();
-                } else {
-                    $existingVote->delete();
-                }
-            } else {
-                $post->votes()->create([
-                    'vote' => $vote,
-                    'fk_id_user' => $id_user,
-                ]);
-            }
+        $post->votes()->create([
+            'vote' => $vote,
+            'fk_id_user' => $id_user,
+        ]);
+        return "El voto no existia y se acaba de crear";
     }
+
+    public function RestoreVote($existingVote, $post, $id_user, $vote) {
+        //$existingVote->restore();
+        echo "El voto ya existe y fue restaurado";
+        if ($existingVote -> vote != $vote) {
+            $existingVote -> vote = $vote;
+            $existingVote -> save();
+            return "El voto es diferente al que ya existia y se modifico";
+        } else if ($existingVote -> vote == $vote){
+            $existingVote->delete();
+            return "El voto es igual al anterior y se elimino";
+        }
+    }
+
+/*
+    private function up(Post $post, $id_user, $vote) {
+        if ($existingVote->vote != $vote) {
+            $existingVote->vote = $vote;
+            $existingVote->save();
+        } else {
+            $existingVote->delete();
+        }
+    }
+*/
 
     private function UpdateVoteCount(Post $post) {
         $votesCount = $post->votes()->where('vote', true)->count() - $post->votes()->where('vote', false)->count();
