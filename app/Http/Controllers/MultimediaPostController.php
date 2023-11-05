@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\MultimediaPost;
 use App\Models\Post;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
@@ -18,29 +20,69 @@ class MultimediaPostController extends Controller
         return MultimediaPost::where('fk_id_post', $id_post)->get();
     }
 
-    public function ValidateMultimedia(Request $request) {
+    public function GetFileData($file) {
+        $originalName = $file->getClientOriginalName();
+        $fileExtension = $file->getClientOriginalExtension();
+        $fileSize = $file->getSize();
+        $mimeType = $file->getMimeType();
+
+        return [
+            'original_name' => $originalName,
+            'file_extension' => $fileExtension,
+            'file_size' => $fileSize,
+            'mime_type' => $mimeType,
+        ];
+    }
+    
+    public function ValidateRequest(Request $request) {
         $validator = Validator::make($request->all(), [
             'fk_id_post' => 'required | exists:post,id_post',
             'multimedia_file' => 'required | image | mimes:jpeg,png,mp4 | max:5120'
         ]);
 
+        return $this->ValidateMultimedia($request, $validator);
+    }
+
+    public function ValidateMultimedia(Request $request, $validator) {
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
+
         return $this->SaveMultimedia($request);
     }
 
-    public function SaveMultimedia (Request $request) {
-        $mediaPost = new MultimediaPost();
-        if ($request->hasFile('multimedia_file')){
-            $image = $request->file('multimedia_file');
-            $imageExtension = $image->getClientOriginalExtension();
-            $path = $image->store('/public/multimedia_post');
-            $mediaPost -> multimediaLink = basename($path);
-        }
-        $mediaPost -> fk_id_post = $request->input('fk_id_post');
-        $mediaPost -> save();
+    public function SaveMultimedia(Request $request) {
+        $file = $request->file('multimedia_file');
+        $fileData = $this->GetFileData($file);
 
-        return response()->json($mediaPost, 201);
+        $fileName = Str::random(50) . "." . $fileData['file_extension'];
+        $destinationPath = 'multimedia_post';
+        $file->move($destinationPath, $fileName);
+
+        return $this->CreateMultimedia($request, $fileName);
+    }
+
+    public function CreateMultimedia(Request $request, $fileName) {
+        $imagen = new MultimediaPost();
+        $imagen -> multimediaLink = $fileName;
+        $imagen -> fk_id_post = $request->input('fk_id_post');
+        return $this->TransactionSaveMultimedia($imagen);
+    }
+
+    public function TransactionSaveMultimedia($imagen) {        
+        try {
+            DB::raw('LOCK TABLE multimedia_post WRITE');
+            DB::beginTransaction();
+            $imagen -> save();
+            DB::commit();
+            DB::raw('UNLOCK TABLES');
+            return $imagen;
+        } catch (\Illuminate\Database\QueryException $th) {
+            DB::rollback();
+            return $th->getMessage();
+        }
+        catch (\PDOException $th) {
+            return response("Permission to DB denied",403);
+        }
     }
 }
