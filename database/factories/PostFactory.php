@@ -11,10 +11,13 @@ class PostFactory extends Factory
 {
     public function definition()
     {
+        $text = $this->faker->paragraph();
+        $text = Str::limit($text, 500);
+
         return [
             'fk_id_user' => random_int(1, 10),
             'fk_id_event' => random_int(1, 10),
-            'text' => $this->faker->paragraph(),
+            'text' => $text,
             'latitud' => $this->faker->latitude(),
             'longitud' => $this->faker->longitude(),
             'date' => $this->faker->dateTime()

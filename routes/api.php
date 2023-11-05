@@ -41,7 +41,7 @@ Route::prefix('v1')->middleware(Autenticacion::class)->group(function(){
     Route::get('/votes', [VotesController::class, 'ListAllVotes']);
     Route::get('/votes/listUser/{id_user}', [VotesController::class, 'ListOwnedVotes']);
     Route::get('/votes/listPost/{id_post}', [VotesController::class, 'ListPostVotes']);
-    Route::post('/votes/create', [VotesController::class, 'ValidateVote']);
+    Route::post('/votes/create', [VotesController::class, 'ValidateRequest']);
 
     Route::get('/comments', [CommentsController::class, 'ListAll']);
     Route::get('/comments/listUser', [CommentsController::class, 'ListOwnedComments']);
