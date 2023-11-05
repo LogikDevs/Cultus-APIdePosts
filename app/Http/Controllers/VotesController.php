@@ -6,12 +6,13 @@ use App\Models\Votes;
 use App\Models\Post;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
 class VotesController extends Controller
 {
-    public function GetUserLogged(Request $request) {
+    public function GetUser(Request $request) {
         return $request->input('user');
     }
 
@@ -19,18 +20,20 @@ class VotesController extends Controller
         return Votes::all();
     }
 
-    public function ListOwnedVotes(Request $request) {
-        $user = $this->GetUserLogged($request);
-        return Votes::where('fk_id_user', $user['id'])->get();
-    }
-
     public function ListPostVotes(Request $request, $id_post) {
         return Votes::where('fk_id_post', $id_post)->get();
     }
 
-    public function ValidateVote(Request $request) {
-        $validator = $this->ValidateData($request);
+    public function ValidateRequest(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'fk_id_post'=>'required | exists:post,id_post',
+            'vote'=>'required | boolean'
+        ]);
 
+        return $this->ValidateVote($request, $validator);
+    }
+
+    public function ValidateVote(Request $request, $validator) {
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
@@ -38,61 +41,87 @@ class VotesController extends Controller
         return $this->CreateVote($request);
     }
 
-    public function ValidateData(Request $request) {
-        return Validator::make($request->all(), [
-            'fk_id_post'=>'required | exists:post,id_post',
-            'vote'=>'required | boolean'
-        ]);
-    }
-
     public function CreateVote(Request $request) {
-        $user = $this->GetUserLogged($request);
+        $user = $this->GetUser($request);
         $post = Post::find($request['fk_id_post']);
 
-        return $this->UpdateCreateVote($post, $user['id'], $request['vote']);
+        $updateCreateVote = $this->UpdateCreateVote($request);
         $this->UpdateVoteCount($post);
+
+        return $updateCreateVote;
     }
 
-    private function UpdateCreateVote(Post $post, $id_user, $vote) {
-        $existingVote = $post->votes()
-            ->where('fk_id_user', $id_user)
-            //->withTrashed()
-            ->first();
-            
+    private function UpdateCreateVote(Request $request) {
+        $existingVote = $this->ExistingVote($request);
+
         if ($existingVote) {
-            return $this->RestoreVote($existingVote, $post, $id_user, $vote);
+            if ($existingVote->trashed()) {
+                return $this->RestoreTrashedVote($request, $existingVote);
+            }
+
+            return $this->RestoreEliminateVote($request, $existingVote);
         }
 
-        $post->votes()->create([
-            'vote' => $vote,
-            'fk_id_user' => $id_user,
-        ]);
-        return "El voto no existia y se acaba de crear";
+        return $this->CreateNewVote($request);
     }
 
-    public function RestoreVote($existingVote, $post, $id_user, $vote) {
-        //$existingVote->restore();
-        echo "El voto ya existe y fue restaurado";
-        if ($existingVote -> vote != $vote) {
-            $existingVote -> vote = $vote;
-            $existingVote -> save();
-            return "El voto es diferente al que ya existia y se modifico";
-        } else if ($existingVote -> vote == $vote){
-            $existingVote->delete();
-            return "El voto es igual al anterior y se elimino";
+    private function ExistingVote(Request $request) {
+        $user = $this->GetUser($request);
+
+        return Votes::where('fk_id_user', $user['id'])
+                        ->where('fk_id_post', $request['fk_id_post'])
+                        ->withTrashed()
+                        ->first();
+    }
+
+    private function RestoreTrashedVote(Request $request, $existingVote) {
+            $existingVote->restore();
+            if ($existingVote['vote'] != $request['vote']) {
+                $existingVote -> vote = $request['vote'];
+                $existingVote = $this->TransactionSave($existingVote);
+            }
+
+            return $existingVote['vote'];
+    }
+
+    private function RestoreEliminateVote(Request $request, $existingVote) {
+        if ($existingVote['vote'] == $request['vote']) {
+            $existingVote->delete();     
+            return 2;          
+        } else if ($existingVote['vote'] != $request['vote']) {
+            $existingVote -> vote = $request['vote'];
+            $existingVote = $this->TransactionSave($existingVote);
+            return $existingVote['vote'];
         }
     }
 
-/*
-    private function up(Post $post, $id_user, $vote) {
-        if ($existingVote->vote != $vote) {
-            $existingVote->vote = $vote;
-            $existingVote->save();
-        } else {
-            $existingVote->delete();
+    private function CreateNewVote(Request $request) {
+        $user = $this->GetUser($request);
+
+        $newVote = new Votes();
+        $newVote -> fk_id_user = $user['id'];
+        $newVote -> fk_id_post = $request->input('fk_id_post');
+        $newVote -> vote = $request->input('vote');
+
+        return $this->TransactionSave($newVote);
+    }
+
+    public function TransactionSave($vote) {        
+        try {
+            DB::raw('LOCK TABLE votes WRITE');
+            DB::beginTransaction();
+            $vote -> save();
+            DB::commit();
+            DB::raw('UNLOCK TABLES');
+            return $vote;
+        } catch (\Illuminate\Database\QueryException $th) {
+            DB::rollback();
+            return $th->getMessage();
+        }
+        catch (\PDOException $th) {
+            return response("Permission to DB denied",403);
         }
     }
-*/
 
     private function UpdateVoteCount(Post $post) {
         $votesCount = $post->votes()->where('vote', true)->count() - $post->votes()->where('vote', false)->count();
