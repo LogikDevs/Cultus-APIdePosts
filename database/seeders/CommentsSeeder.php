@@ -13,7 +13,7 @@ class CommentsSeeder extends Seeder
         DB::table('comments')->insert([
             'fk_id_user' => 2,
             'fk_id_post' => 1,
-            'text' => 'primer comentario'
+            'text' => 'COMENTARIO PARA TESTING'
         ]);
 
         Comments::factory(10)->create();

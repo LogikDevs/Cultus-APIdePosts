@@ -40,16 +40,24 @@ class PostSeeder extends Seeder
 
     public function run()
     {      
+        DB::table('users')->insert([
+            'name' => 'logik',
+            'surname' => 'devs',
+            'age' => 20,
+            'email' => 'logikdevs@gmail.com',
+            'password' => '12345678'
+        ]);
+
         $this -> CreateUsers();
         $this -> CreateEvents();
         
         DB::table('post')->insert([
             'fk_id_user' => 1,
             'fk_id_event' => 1,
-            'text' => 'texto prueba',
+            'text' => 'TEXTO PARA TESTING',
             'latitud' => '123456',
             'longitud' => '123456',
-            'date' => date('01-12-23 08:00')
+            'date' => date('01-12-23 00:00:00')
         ]);
 
         Post::factory(10)->create();
