@@ -25,6 +25,24 @@ class PostController extends Controller
         return Http::withHeaders($tokenHeader)->get(getenv("API_AUTH_URL") . "/api/v1/validate");
     }
 
+    private function GetUserData($fk_id_user) {
+        $user = User::find($fk_id_user);
+        return $user->only(['name', 'surname', 'profile_pic']);
+    }
+
+    public function GetPostDetails(Request $request, $postToList) {
+        $tokenHeader = [ "Authorization" => $request -> header("Authorization")];
+        $post['user'] = $this->GetUserData($postToList['fk_id_user']);
+        $post['post'] = $postToList;
+        $post['multimedia'] = $this->GetMultimedia($postToList['id_post']);
+        $post['interests'] = $this->GetInterestsFromPost($postToList['id_post'], $tokenHeader);
+        $post['comments'] = $this->GetComments($postToList['id_post']);
+
+    public function GetUser(Request $request) {
+        $tokenHeader = [ "Authorization" => $request -> header("Authorization")];
+        return Http::withHeaders($tokenHeader)->get(getenv("API_AUTH_URL") . "/api/v1/validate");
+    }
+
     public function GetPostsFromEvent(Request $request, $fk_id_event) {
         $post = Post::where('fk_id_event', $fk_id_event)->get();
 
@@ -145,7 +163,11 @@ class PostController extends Controller
             return $response->json();
         }
 
-        return [];
+        return $post;
+    }
+
+    private function GetMultimedia($id_post) {
+        return MultimediaPost::where('fk_id_post', $id_post)->get();
     }
 
     public function GetUserInterests(Request $request, $id_user) {
@@ -214,6 +236,8 @@ class PostController extends Controller
     }
 
     public function ValidatePost(Request $request, $validator){
+        $user = $this->GetUser($request);
+
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
