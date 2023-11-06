@@ -10,16 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 class CharacterizesController extends Controller
 {
-    public function ListPostLabels(Request $request, $id_post) {
-        return Characterizes::where('fk_id_post', $id_post)->get();
-    }
-
-    public function ListLabelPosts(Request $request, $id_label) {
-        return Characterizes::where('fk_id_label', $id_label)->get();
-    }
-
     public function CreateCharacterizes(Request $request) {
-        //devuelve 201: created
         $validator = Validator::make($request->all(), [
             'fk_id_label'=>'required | exists:interest_label,id_label',
             'fk_id_post'=>'required | exists:post,id_post'

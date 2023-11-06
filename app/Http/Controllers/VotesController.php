@@ -19,11 +19,7 @@ class VotesController extends Controller
     public function ListAllVotes(Request $request) {
         return Votes::all();
     }
-
-    public function ListPostVotes(Request $request, $id_post) {
-        return Votes::where('fk_id_post', $id_post)->get();
-    }
-
+    
     public function ValidateRequest(Request $request) {
         $validator = Validator::make($request->all(), [
             'fk_id_post'=>'required | exists:post,id_post',
