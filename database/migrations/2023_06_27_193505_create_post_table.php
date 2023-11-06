@@ -13,7 +13,7 @@ class CreatePostTable extends Migration
             $table->id('id_post');
             $table->unsignedBigInteger('fk_id_user');
             $table->unsignedBigInteger('fk_id_event')->nullable();
-            $table->text('text')->nullable()->max(255);
+            $table->text('text')->max(500);
             $table->string('latitud')->nullable();
             $table->string('longitud')->nullable();
             $table->dateTime('date');
