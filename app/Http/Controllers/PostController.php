@@ -243,7 +243,6 @@ class PostController extends Controller
         }
         
         return null;
-
     }
 
     public function ValidateUserIsAdmin(Request $request, $admin, $user){
