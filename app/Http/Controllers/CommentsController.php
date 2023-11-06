@@ -13,21 +13,12 @@ use Illuminate\Http\Request;
 
 class CommentsController extends Controller
 {
-    public function GetUserLogged(Request $request) {
+    public function GetUser(Request $request) {
         return $request->input('user');
     }
 
     public function ListAll(Request $request) {
         return Comments::all();
-    }
-
-    public function ListOwnedComments(Request $request) {
-        $user = $this->GetUserLogged($request);
-        return Comments::where('fk_id_user', $user['id'])->get();
-    }
-
-    public function ListPostComments(Request $request, $id_post) {
-        return Comments::where('fk_id_post', $id_post)->get();
     }
 
     private function UpdateCommentCount($postId) {
@@ -38,7 +29,6 @@ class CommentsController extends Controller
     }
 
     public function CreateComment(Request $request){
-        //devuelve 200: ok
         $validator = Validator::make($request->all(), [
             'fk_id_post' => 'required | exists:post,id_post',
             'text' => 'required | max:255',
@@ -51,7 +41,17 @@ class CommentsController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
-        return $this->saveComment($request);
+        return response ($this->saveComment($request), 201);
+    }
+
+    private function saveComment(Request $request) {
+        $user = $this->GetUser($request);
+        $newComment = $this->NewComment($request, $user);
+        $createdComment = $this->TransactionSaveComment($newComment);
+
+        $this->UpdateCommentCount($request['fk_id_post']);
+
+        return $this->ReturnNewComment($user, $createdComment);
     }
 
     public function NewComment(Request $request, $user) {
@@ -63,18 +63,9 @@ class CommentsController extends Controller
         return $newComment;
     }
 
-    private function saveComment(Request $request) {
-        $user = $this->GetUserLogged($request);
-        $newComment = $this->NewComment($request, $user);
-        $createdComment = $this->TransactionSaveComment($newComment);
-
-        $this->UpdateCommentCount($request['fk_id_post']);
-
-        return $this->ReturnNewComment($user, $createdComment);
-    }
-
     public function ReturnNewComment($user, $createdComment) {
         $userData = [
+            'id' => $user['id'],
             'name' => $user['name'],
             'surname' => $user['surname'],
             'profile_pic' => $user['profile_pic'],
@@ -104,7 +95,7 @@ class CommentsController extends Controller
     }
 
     public function Delete(Request $request, $id_comment) {
-        $user = $this->GetUserLogged($request);
+        $user = $this->GetUser($request);
         $comment = Comments::findOrFail($id_comment);
         
         if ($comment['fk_id_user'] == $user['id']) {
