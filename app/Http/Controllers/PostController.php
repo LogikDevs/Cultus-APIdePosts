@@ -102,7 +102,11 @@ class PostController extends Controller
             $posts[] = $postData;
         }
 
-        return $this->SortPostsByMostRecentDate($posts);
+        if ($posts) {
+            return response ($this->SortPostsByMostRecentDate($posts), 200);
+        }
+
+        return response ("No existe el usuario recibido", 404);
     }
     
     public function ListFollowed(Request $request) {
