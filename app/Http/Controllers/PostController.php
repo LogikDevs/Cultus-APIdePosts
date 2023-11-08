@@ -103,7 +103,7 @@ class PostController extends Controller
         }
 
         if ($posts) {
-            return response ($this->SortPostsByMostRecentDate($posts), 200);
+            return $this->SortPostsByMostRecentDate($posts);
         }
 
         return response ("No existe el usuario recibido", 404);
@@ -214,7 +214,7 @@ class PostController extends Controller
             'longitud' => 'nullable | numeric'
         ]);
         
-        return response ($this->ValidatePost($request, $validator), 201);
+        return $this->ValidatePost($request, $validator);
     }
 
     public function ValidatePost(Request $request, $validator){
@@ -268,7 +268,7 @@ class PostController extends Controller
         $newPost -> longitud = $request->input('longitud');
         $newPost -> date = date('d-m-y H:i');
         
-        return $this->TransactionSavePost($newPost);
+        return response ($this->TransactionSavePost($newPost), 201);
     }
 
     public function TransactionSavePost($newPost) {        
