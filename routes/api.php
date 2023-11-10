@@ -35,6 +35,7 @@ Route::prefix('v1')->middleware(Autenticacion::class)->group(function(){
     Route::get('/posts/interested', [PostController::class, 'ListInterested']);
     Route::post('/posts/create', [PostController::class, 'CreatePost']);
     Route::delete('/posts/delete/{id_post}', [PostController::class, 'Delete']);
+    Route::get('/posts/month/{id_post}', [PostController::class, 'GetPostsFromMonthAgoToToday']);
 
     Route::get('/votes', [VotesController::class, 'ListAllVotes']);
     Route::post('/votes/create', [VotesController::class, 'ValidateRequest']);

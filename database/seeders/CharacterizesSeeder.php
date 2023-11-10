@@ -48,6 +48,11 @@ class CharacterizesSeeder extends Seeder
             'fk_id_post' => 1
         ]);
 
+        DB::table('likes')->insert([
+            'id_user' => 11,
+            'id_interest' => 1
+        ]);
+
         Characterizes::factory(10)->create();
     }
 }

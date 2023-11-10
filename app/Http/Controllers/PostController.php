@@ -102,7 +102,9 @@ class PostController extends Controller
             $posts[] = $postData;
         }
 
-        return $this->SortPostsByMostRecentDate($posts);
+        if ($posts) {
+            return $this->SortPostsByMostRecentDate($posts);
+        }
     }
     
     public function ListFollowed(Request $request) {
@@ -110,6 +112,7 @@ class PostController extends Controller
         $followeds = $this->GetFollowedUsers($request);
         foreach ($followeds as $f) {
             $userPosts = $this->ListUserPosts($request, $f['id_followed']);
+            return $userPosts;
             $posts = array_merge($posts, $userPosts);
         }
 
@@ -123,6 +126,7 @@ class PostController extends Controller
 
         $userInterests = $this->GetUserInterests($request, $user['id']);
         $posts = $this->GetInterestedCharacterizes($request, $userInterests);
+        return $posts;
         $postsDetails = $this->GetInterestedPostsDetails($request, $posts);
 
         return $postsDetails;
@@ -163,6 +167,7 @@ class PostController extends Controller
         foreach ($userInterests as $u) {
             $postInterested = $this->GetPostInterests($u['id_label']);
             $posts = $this->GetInterestedPosts($postInterested);
+            //return $posts;
         }
 
         return $posts;
@@ -185,7 +190,7 @@ class PostController extends Controller
         return $posts;
     }
 
-    private function GetPostsFromMonthAgoToToday($id_post) {
+    public function GetPostsFromMonthAgoToToday($id_post) {
         $month = now()->subDays(30);
         return Post::where('id_post', $id_post)
         ->where('created_at', '>=', $month)
@@ -194,6 +199,8 @@ class PostController extends Controller
     }
 
     private function GetInterestedPostsDetails(Request $request, $posts) {
+        $postsDetails = [];
+
         foreach ($posts as $p) {
             $postDetails = $this->GetPostDetails($request, $p);
             $postsDetails[] = $postDetails;
@@ -210,7 +217,7 @@ class PostController extends Controller
             'longitud' => 'nullable | numeric'
         ]);
         
-        return response ($this->ValidatePost($request, $validator), 201);
+        return $this->ValidatePost($request, $validator);
     }
 
     public function ValidatePost(Request $request, $validator){
@@ -264,7 +271,7 @@ class PostController extends Controller
         $newPost -> longitud = $request->input('longitud');
         $newPost -> date = date('d-m-y H:i');
         
-        return $this->TransactionSavePost($newPost);
+        return response ($this->TransactionSavePost($newPost), 201);
     }
 
     public function TransactionSavePost($newPost) {        
