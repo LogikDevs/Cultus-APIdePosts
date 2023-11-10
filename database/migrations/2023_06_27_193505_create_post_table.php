@@ -13,6 +13,7 @@ class CreatePostTable extends Migration
             $table->id('id_post');
             $table->unsignedBigInteger('fk_id_user');
             $table->unsignedBigInteger('fk_id_event')->nullable();
+            $table->unsignedBigInteger('fk_id_group')->nullable();
             $table->text('text')->max(500);
             $table->string('latitud')->nullable();
             $table->string('longitud')->nullable();
@@ -22,7 +23,7 @@ class CreatePostTable extends Migration
             
             $table->foreign('fk_id_user')->references('id')->on('users');
             $table->foreign('fk_id_event')->references('id')->on('events');
-
+            $table->foreign('fk_id_group')->references('id_group')->on('groups');
             $table->timestamps();
             $table->softDeletes();
         });
