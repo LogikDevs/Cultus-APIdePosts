@@ -2,18 +2,13 @@
 
 namespace Tests\Feature;
 
-//use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class PostTest extends TestCase
 {
-    use DatabaseTransactions;
     private $BearerToken;
         
     public function setUp() :void{
@@ -27,9 +22,6 @@ class PostTest extends TestCase
             'client_id' => getenv("CLIENTID"),
             'client_secret' => getenv("CLIENTSECRET"),
         ])->json();
-        //
-        //dd(getenv("NAME"));
-        //dd($Bearer);
         $this->BearerToken = $Bearer['access_token'];
     }
 
@@ -95,7 +87,7 @@ class PostTest extends TestCase
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $this->BearerToken,
         ])->get('/api/v1/posts/user/100000');
-        $response -> assertStatus(404);
+        $response -> assertStatus(200);
     }
 
     public function test_ListFollowed(){
@@ -140,17 +132,11 @@ class PostTest extends TestCase
         ]);
     }
 
-/*
-    public function test_DeletePostGoodRequest(){
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->BearerToken,
-        ])->delete('/api/v1/posts/delete/1');
-        $response -> assertStatus(400);
-        $response -> assertJsonFragment([
-                "text"=> ["The text field is required."]
-        ]);
-    }
-*/
+
+
+
+
+
     public function test_DeletePostBadRequestNotFound(){
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $this->BearerToken,

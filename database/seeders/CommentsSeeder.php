@@ -11,7 +11,7 @@ class CommentsSeeder extends Seeder
     public function run()
     {
         DB::table('comments')->insert([
-            'fk_id_user' => 2,
+            'fk_id_user' => 11,
             'fk_id_post' => 1,
             'text' => 'COMENTARIO PARA TESTING'
         ]);

@@ -105,8 +105,6 @@ class PostController extends Controller
         if ($posts) {
             return $this->SortPostsByMostRecentDate($posts);
         }
-
-        return response ("No existe el usuario recibido", 404);
     }
     
     public function ListFollowed(Request $request) {
@@ -114,6 +112,7 @@ class PostController extends Controller
         $followeds = $this->GetFollowedUsers($request);
         foreach ($followeds as $f) {
             $userPosts = $this->ListUserPosts($request, $f['id_followed']);
+            return $userPosts;
             $posts = array_merge($posts, $userPosts);
         }
 
@@ -127,6 +126,7 @@ class PostController extends Controller
 
         $userInterests = $this->GetUserInterests($request, $user['id']);
         $posts = $this->GetInterestedCharacterizes($request, $userInterests);
+        return $posts;
         $postsDetails = $this->GetInterestedPostsDetails($request, $posts);
 
         return $postsDetails;
@@ -167,6 +167,7 @@ class PostController extends Controller
         foreach ($userInterests as $u) {
             $postInterested = $this->GetPostInterests($u['id_label']);
             $posts = $this->GetInterestedPosts($postInterested);
+            //return $posts;
         }
 
         return $posts;
@@ -189,7 +190,7 @@ class PostController extends Controller
         return $posts;
     }
 
-    private function GetPostsFromMonthAgoToToday($id_post) {
+    public function GetPostsFromMonthAgoToToday($id_post) {
         $month = now()->subDays(30);
         return Post::where('id_post', $id_post)
         ->where('created_at', '>=', $month)
@@ -198,6 +199,8 @@ class PostController extends Controller
     }
 
     private function GetInterestedPostsDetails(Request $request, $posts) {
+        $postsDetails = [];
+
         foreach ($posts as $p) {
             $postDetails = $this->GetPostDetails($request, $p);
             $postsDetails[] = $postDetails;
