@@ -41,9 +41,18 @@ class PostController extends Controller
         $post['post'] = $postToList;
         $post['multimedia'] = $this->GetMultimedia($postToList['id_post']);
         $post['interests'] = $this->GetInterestsFromPost($postToList['id_post'], $tokenHeader);
+        $post['user_vote'] = $this->GetPersonalVote($request, $postToList['id_post']);
         $post['comments'] = $this->GetComments($postToList['id_post']);
 
         return $post;
+    }
+
+    private function GetPersonalVote(Request $request, $id_post) {
+        $user = $this->GetUser($request);
+
+            return Votes::where('fk_id_user', $user['id'])
+                        ->where('fk_id_post', $id_post)
+                        ->value('vote');
     }
 
     private function GetUserData($fk_id_user) {
