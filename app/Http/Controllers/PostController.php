@@ -121,7 +121,6 @@ class PostController extends Controller
         $followeds = $this->GetFollowedUsers($request);
         foreach ($followeds as $f) {
             $userPosts = $this->ListUserPosts($request, $f['id_followed']);
-            return $userPosts;
             $posts = array_merge($posts, $userPosts);
         }
 
@@ -135,7 +134,6 @@ class PostController extends Controller
 
         $userInterests = $this->GetUserInterests($request, $user['id']);
         $posts = $this->GetInterestedCharacterizes($request, $userInterests);
-        return $posts;
         $postsDetails = $this->GetInterestedPostsDetails($request, $posts);
 
         return $postsDetails;
@@ -173,10 +171,10 @@ class PostController extends Controller
     }
 
     private function GetInterestedCharacterizes(Request $request, $userInterests) {
+        $posts = [];
         foreach ($userInterests as $u) {
             $postInterested = $this->GetPostInterests($u['id_label']);
-            $posts = $this->GetInterestedPosts($postInterested);
-            //return $posts;
+            $posts = array_merge($posts, $this->GetInterestedPosts($postInterested));
         }
 
         return $posts;
@@ -188,7 +186,6 @@ class PostController extends Controller
 
     private function GetInterestedPosts($postInterested) {
         $posts = [];
-
         foreach ($postInterested as $p) {
             $post = $this->GetPostsFromMonthAgoToToday($p['fk_id_post']);
             if ($post) {
