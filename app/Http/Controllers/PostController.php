@@ -83,7 +83,7 @@ class PostController extends Controller
 
     private function GetComments($id_post) {
         return Comments::where('fk_id_post', $id_post)
-            ->with('user:id,name,surname')
+            ->with('user:id,name,surname,profile_pic')
             ->get()
             ->map(function ($comment) {
                 return [
