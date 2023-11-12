@@ -104,6 +104,16 @@ class PostController extends Controller
     }
 
     public function ListUserPosts(Request $request, $id_user) {
+        $postsDetails = [];
+        $userPosts = Post::where('fk_id_user', $id_user)->get();
+    
+        foreach ($userPosts as $u) {
+            $postData = $this->GetPostDetails($request, $u);
+            $postsDetails[] = $postData;
+        }
+    
+        return $this->SortPostsByMostRecentDate($postsDetails);
+/*
         $posts = [];
         $userPosts = Post::where('fk_id_user', $id_user)->get();
         foreach ($userPosts as $u) {
@@ -114,6 +124,7 @@ class PostController extends Controller
         if ($posts) {
             return $this->SortPostsByMostRecentDate($posts);
         }
+*/
     }
     
     public function ListFollowed(Request $request) {
@@ -121,8 +132,8 @@ class PostController extends Controller
         $followeds = $this->GetFollowedUsers($request);
         foreach ($followeds as $f) {
             $userPosts = $this->ListUserPosts($request, $f['id_followed']);
-            return $userPosts;
-            $posts = array_merge($posts, $userPosts);
+            //$posts = array_merge($posts, $userPosts);
+            $posts[] = $userPosts;
         }
 
         return $this->SortPostsByMostRecentDate($posts);
@@ -135,15 +146,21 @@ class PostController extends Controller
 
         $userInterests = $this->GetUserInterests($request, $user['id']);
         $posts = $this->GetInterestedCharacterizes($request, $userInterests);
-        return $posts;
         $postsDetails = $this->GetInterestedPostsDetails($request, $posts);
 
         return $postsDetails;
     }
 
     private function SortPostsByMostRecentDate($posts) {
-        usort($posts, function($a, $b) {
+/*        usort($posts, function($a, $b) {
             return strtotime($b['post']['date']) - strtotime($a['post']['date']);
+        });
+*/
+        usort($posts, function($a, $b) {
+            $dateA = isset($a['post']['date']) ? strtotime($a['post']['date']) : 0;
+            $dateB = isset($b['post']['date']) ? strtotime($b['post']['date']) : 0;
+    
+            return $dateB - $dateA;
         });
 
         return $posts;
@@ -173,10 +190,10 @@ class PostController extends Controller
     }
 
     private function GetInterestedCharacterizes(Request $request, $userInterests) {
+        $posts = [];
         foreach ($userInterests as $u) {
             $postInterested = $this->GetPostInterests($u['id_label']);
-            $posts = $this->GetInterestedPosts($postInterested);
-            //return $posts;
+            $posts = array_merge($posts, $this->GetInterestedPosts($postInterested));
         }
 
         return $posts;
@@ -188,7 +205,6 @@ class PostController extends Controller
 
     private function GetInterestedPosts($postInterested) {
         $posts = [];
-
         foreach ($postInterested as $p) {
             $post = $this->GetPostsFromMonthAgoToToday($p['fk_id_post']);
             if ($post) {
