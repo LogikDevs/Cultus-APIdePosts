@@ -104,6 +104,16 @@ class PostController extends Controller
     }
 
     public function ListUserPosts(Request $request, $id_user) {
+        $postsDetails = [];
+        $userPosts = Post::where('fk_id_user', $id_user)->get();
+    
+        foreach ($userPosts as $u) {
+            $postData = $this->GetPostDetails($request, $u);
+            $postsDetails[] = $postData;
+        }
+    
+        return $this->SortPostsByMostRecentDate($postsDetails);
+/*
         $posts = [];
         $userPosts = Post::where('fk_id_user', $id_user)->get();
         foreach ($userPosts as $u) {
@@ -114,6 +124,7 @@ class PostController extends Controller
         if ($posts) {
             return $this->SortPostsByMostRecentDate($posts);
         }
+*/
     }
     
     public function ListFollowed(Request $request) {
@@ -121,7 +132,8 @@ class PostController extends Controller
         $followeds = $this->GetFollowedUsers($request);
         foreach ($followeds as $f) {
             $userPosts = $this->ListUserPosts($request, $f['id_followed']);
-            $posts = array_merge($posts, $userPosts);
+            //$posts = array_merge($posts, $userPosts);
+            $posts[] = $userPosts;
         }
 
         return $this->SortPostsByMostRecentDate($posts);
@@ -140,8 +152,15 @@ class PostController extends Controller
     }
 
     private function SortPostsByMostRecentDate($posts) {
-        usort($posts, function($a, $b) {
+/*        usort($posts, function($a, $b) {
             return strtotime($b['post']['date']) - strtotime($a['post']['date']);
+        });
+*/
+        usort($posts, function($a, $b) {
+            $dateA = isset($a['post']['date']) ? strtotime($a['post']['date']) : 0;
+            $dateB = isset($b['post']['date']) ? strtotime($b['post']['date']) : 0;
+    
+            return $dateB - $dateA;
         });
 
         return $posts;
