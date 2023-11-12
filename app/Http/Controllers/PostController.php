@@ -83,7 +83,7 @@ class PostController extends Controller
 
     private function GetComments($id_post) {
         return Comments::where('fk_id_post', $id_post)
-            ->with('user:id,name,surname')
+            ->with('user:id,name,surname,profile_pic')
             ->get()
             ->map(function ($comment) {
                 return [
@@ -113,18 +113,6 @@ class PostController extends Controller
         }
     
         return $this->SortPostsByMostRecentDate($postsDetails);
-/*
-        $posts = [];
-        $userPosts = Post::where('fk_id_user', $id_user)->get();
-        foreach ($userPosts as $u) {
-            $postData = $this->GetPostDetails($request, $u);
-            $posts[] = $postData;
-        }
-
-        if ($posts) {
-            return $this->SortPostsByMostRecentDate($posts);
-        }
-*/
     }
     
     public function ListFollowed(Request $request) {
@@ -132,8 +120,7 @@ class PostController extends Controller
         $followeds = $this->GetFollowedUsers($request);
         foreach ($followeds as $f) {
             $userPosts = $this->ListUserPosts($request, $f['id_followed']);
-            //$posts = array_merge($posts, $userPosts);
-            $posts[] = $userPosts;
+            $posts = array_merge($posts, $userPosts);
         }
 
         return $this->SortPostsByMostRecentDate($posts);
@@ -152,10 +139,6 @@ class PostController extends Controller
     }
 
     private function SortPostsByMostRecentDate($posts) {
-/*        usort($posts, function($a, $b) {
-            return strtotime($b['post']['date']) - strtotime($a['post']['date']);
-        });
-*/
         usort($posts, function($a, $b) {
             $dateA = isset($a['post']['date']) ? strtotime($a['post']['date']) : 0;
             $dateB = isset($b['post']['date']) ? strtotime($b['post']['date']) : 0;
