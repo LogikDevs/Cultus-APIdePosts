@@ -19,8 +19,7 @@ class PostFactory extends Factory
             'fk_id_user' => random_int(1, 10),
             'fk_id_event' => random_int(1, 10),
             'text' => $text,
-            'latitud' => $this->faker->latitude(),
-            'longitud' => $this->faker->longitude(),
+            'latitud' => random_int(1, 10),
             'date' => $this->faker->dateTime()
         ];
     }
