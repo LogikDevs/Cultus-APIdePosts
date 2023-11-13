@@ -38,6 +38,8 @@ class PostController extends Controller
     public function GetPostDetails(Request $request, $postToList) {
         $tokenHeader = [ "Authorization" => $request -> header("Authorization")];
         $post['user'] = $this->GetUserData($postToList['fk_id_user']);
+        $country = $this->GetCountry($postToList['location'], $tokenHeader);
+        $postToList['location'] = $country['country_name'];
         $post['post'] = $postToList;
         $post['multimedia'] = $this->GetMultimedia($postToList['id_post']);
         $post['interests'] = $this->GetInterestsFromPost($postToList['id_post'], $tokenHeader);
@@ -58,6 +60,12 @@ class PostController extends Controller
     private function GetUserData($fk_id_user) {
         $user = User::find($fk_id_user);
         return $user->only(['id', 'name', 'surname', 'profile_pic']);
+    }
+
+    public function GetCountry($id_country, $tokenHeader) {
+        $ruta = getenv("API_AUTH_URL") . "/api/v1/country/$id_country";
+        $response = Http::withHeaders($tokenHeader)->get($ruta);
+        return $response->json();
     }
 
     private function GetMultimedia($id_post) {
@@ -225,7 +233,7 @@ class PostController extends Controller
             'fk_id_event' => 'nullable | exists:events,id',
             'fk_id_group' => 'nullable | exists:groups,id_group',
             'text' => 'required | max:500',
-            'location' => 'numeric | exists:country,id_country'
+            'location' => 'required | numeric | exists:country,id_country'
         ]);
         
         return $this->ValidatePost($request, $validator);
