@@ -17,6 +17,7 @@ class CharacterizesSeeder extends Seeder
                 'fk_id_user'=> random_int(1, 10),
                 'text' => $faker->sentence,
                 'date' => $faker->dateTime(),
+                'location'=> random_int(1, 10),
                 'votes' => $faker->numberBetween(0, 500),
                 'comments' => $faker->numberBetween(0, 500)
             ]);

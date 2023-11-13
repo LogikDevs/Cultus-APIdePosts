@@ -23,6 +23,15 @@ class PostSeeder extends Seeder
         }
     }
 
+    private function CreateCountry() {
+        $faker = Faker::create();
+        for ($i = 0; $i < 10; $i++) {
+            DB::table('country')->insert([
+                'country_name' => $faker->country,
+            ]);
+        }
+    }
+
     private function CreateEvents() {
         $faker = Faker::create();
         for ($i = 0; $i < 10; $i++) {
@@ -50,12 +59,13 @@ class PostSeeder extends Seeder
 
         $this -> CreateUsers();
         $this -> CreateEvents();
+        $this -> CreateCountry();
         
         DB::table('post')->insert([
             'fk_id_user' => 1,
             'fk_id_event' => 1,
             'text' => 'TEXTO PARA TESTING',
-            'latitud' => 1,
+            'location' => 1,
             'date' => date('01-12-23 00:00:00')
         ]);
 
