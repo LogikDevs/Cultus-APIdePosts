@@ -55,8 +55,7 @@ class PostSeeder extends Seeder
             'fk_id_user' => 1,
             'fk_id_event' => 1,
             'text' => 'TEXTO PARA TESTING',
-            'latitud' => '123456',
-            'longitud' => '123456',
+            'latitud' => 1,
             'date' => date('01-12-23 00:00:00')
         ]);
 
