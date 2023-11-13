@@ -132,6 +132,7 @@ class PostController extends Controller
         $user = $this->GetUser($request);
 
         $userInterests = $this->GetUserInterests($request, $user['id']);
+        $userInterests = array_unique($userInterests, SORT_REGULAR);
         $posts = $this->GetInterestedCharacterizes($request, $userInterests);
         $postsDetails = $this->GetInterestedPostsDetails($request, $posts);
 
@@ -179,6 +180,8 @@ class PostController extends Controller
             $posts = array_merge($posts, $this->GetInterestedPosts($postInterested));
         }
 
+        //$uniquePosts = collect($posts)->unique('id_post')->values()->all();
+
         return $posts;
     }
 
@@ -220,9 +223,9 @@ class PostController extends Controller
     public function CreatePost(Request $request){
         $validator = Validator::make($request->all(), [
             'fk_id_event' => 'nullable | exists:events,id',
+            'fk_id_group' => 'nullable | exists:groups,id_group',
             'text' => 'required | max:500',
-            'latitud' => 'nullable | numeric',
-            'longitud' => 'nullable | numeric'
+            'location' => 'numeric | exists:country,id_country'
         ]);
         
         return $this->ValidatePost($request, $validator);
@@ -274,9 +277,9 @@ class PostController extends Controller
         $newPost = new Post();
         $newPost -> fk_id_user = $id_user;
         $newPost -> fk_id_event = $request->input('fk_id_event');
+        $newPost -> fk_id_group = $request->input('fk_id_group');
         $newPost -> text = $request->input('text');
-        $newPost -> latitud = $request->input('latitud');
-        $newPost -> longitud = $request->input('longitud');
+        $newPost -> location = $request->input('location');
         $newPost -> date = date('d-m-y H:i');
         
         return response ($this->TransactionSavePost($newPost), 201);
