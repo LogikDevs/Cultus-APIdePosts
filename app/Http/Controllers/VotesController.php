@@ -42,9 +42,12 @@ class VotesController extends Controller
         $post = Post::find($request['fk_id_post']);
 
         $updateCreateVote = $this->UpdateCreateVote($request);
-        $this->UpdateVoteCount($post);
+        $voteCount = $this->UpdateVoteCount($post);
 
-        return $updateCreateVote;
+        $vote['vote'] = $updateCreateVote;
+        $vote['vote_count'] = $voteCount;
+
+        return $vote;
     }
 
     private function UpdateCreateVote(Request $request) {
@@ -123,5 +126,7 @@ class VotesController extends Controller
         $votesCount = $post->votes()->where('vote', true)->count() - $post->votes()->where('vote', false)->count();
         $post->votes = $votesCount;
         $post->save();
+
+        return $post->votes;
     }
 }
