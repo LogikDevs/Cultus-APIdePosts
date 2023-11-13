@@ -132,8 +132,8 @@ class PostController extends Controller
         $user = $this->GetUser($request);
 
         $userInterests = $this->GetUserInterests($request, $user['id']);
-        $userInterests = array_unique($userInterests, SORT_REGULAR);
         $posts = $this->GetInterestedCharacterizes($request, $userInterests);
+        $posts = array_unique($posts, SORT_REGULAR);
         $postsDetails = $this->GetInterestedPostsDetails($request, $posts);
 
         return $postsDetails;
