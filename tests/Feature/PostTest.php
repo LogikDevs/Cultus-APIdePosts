@@ -52,7 +52,7 @@ class PostTest extends TestCase
             ],
             'post' => [
                 "id_post", "fk_id_user", "fk_id_event", "text", 
-                "latitud", "longitud", "date", "votes", "comments", 
+                "location", "date", "votes", "comments", 
                 "created_at", "updated_at", "deleted_at"
             ],
             'multimedia' => [ [
@@ -108,15 +108,18 @@ class PostTest extends TestCase
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $this->BearerToken,
         ])->post('/api/v1/posts/create', [
-            "text" => "texto"
+            "text" => "texto",
+            "location" => 1
         ]);
         $response -> assertStatus(201);
         $response -> assertJsonStructure([
                 "text",
-                "fk_id_user"
+                "fk_id_user",
+                "location"
         ]);
         $this->assertDatabaseHas('post', [
-            "text" => "texto"
+            "text" => "texto",
+            "location" => "2"
         ]);
     }
 
@@ -124,11 +127,13 @@ class PostTest extends TestCase
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $this->BearerToken,
         ])->post('/api/v1/posts/create', [
-            "text" => ""
+            "text" => "",
+            "location" => ""
         ]);
         $response -> assertStatus(400);
         $response -> assertJsonFragment([
-            "text"=> ["The text field is required."]
+            "text"=> ["The text field is required."],
+            "location"=> ["The location field is required."]
         ]);
     }
 

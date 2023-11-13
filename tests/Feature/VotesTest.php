@@ -42,12 +42,19 @@ class VotesTest extends TestCase
         ]);
         $response -> assertStatus(201);
         $response -> assertJsonStructure([
-                "vote",
-                "fk_id_post"
+            'vote'  => [
+                "fk_id_user", "fk_id_post", "vote", 
+                "updated_at", "created_at", "id_vote",
+            ], 
+            'vote_count'
         ]);
         $this->assertDatabaseHas('votes', [
             "vote" => 1,
             "fk_id_post" => 2
+        ]);
+        $this->assertDatabaseHas('post', [
+            "id_post" => 2,
+            "votes" => 1
         ]);
     }
 
@@ -59,7 +66,11 @@ class VotesTest extends TestCase
             "fk_id_post" => 2
         ]);
         $response -> assertStatus(200);
-        $response->assertSee('2');
+        $response -> assertJsonStructure([
+            "vote",
+            "vote_count"
+        ]);
+        //$response->assertSee('2');
     }
 
     public function test_CreateVotesBadRequest(){
