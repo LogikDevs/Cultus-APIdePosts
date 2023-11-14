@@ -29,6 +29,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::prefix('v1')->middleware(Autenticacion::class)->group(function(){
     Route::get('/posts', [PostController::class, 'ListAllPosts']);
     Route::get('/posts/event/{id_event}', [PostController::class, 'GetPostsFromEvent']);
+    Route::get('/posts/group/{id_group}', [PostController::class, 'GetPostsFromGroup']);
     Route::get('/posts/list/{id_post}', [PostController::class, 'ListOnePost']);
     Route::get('/posts/user/{id_user}', [PostController::class, 'ListUserPosts']);
     Route::get('/posts/followed', [PostController::class, 'ListFollowed']);
