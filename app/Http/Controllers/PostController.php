@@ -35,6 +35,19 @@ class PostController extends Controller
         return $posts;
     }
 
+    public function GetPostsFromGroup(Request $request, $fk_id_group) {
+        $post = Post::where('fk_id_group', $fk_id_group)->get();
+        if (!$post->isEmpty()){
+        foreach ($post as $p) {
+            $posts[] = $this->GetPostDetails($request, $p);
+        }
+
+        return $posts;
+        }
+        return response()->json(['response' => 'No hay posts en este grupo.']);
+    }
+
+
     public function GetPostDetails(Request $request, $postToList) {
         $tokenHeader = [ "Authorization" => $request -> header("Authorization")];
         $post['user'] = $this->GetUserData($postToList['fk_id_user']);
