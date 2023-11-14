@@ -17,6 +17,7 @@ class CharacterizesSeeder extends Seeder
                 'fk_id_user'=> random_int(1, 10),
                 'text' => $faker->sentence,
                 'date' => $faker->dateTime(),
+                'location'=> random_int(1, 10),
                 'votes' => $faker->numberBetween(0, 500),
                 'comments' => $faker->numberBetween(0, 500)
             ]);
@@ -42,6 +43,17 @@ class CharacterizesSeeder extends Seeder
     {
         $this -> CreatePosts();
         $this -> CreateInterests();
+
+        DB::table('characterizes')->insert([
+            'fk_id_label' => 1,
+            'fk_id_post' => 1
+        ]);
+
+        DB::table('likes')->insert([
+            'id_user' => 11,
+            'id_interest' => 1
+        ]);
+
         Characterizes::factory(10)->create();
     }
 }

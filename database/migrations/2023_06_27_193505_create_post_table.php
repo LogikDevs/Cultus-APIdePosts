@@ -13,16 +13,17 @@ class CreatePostTable extends Migration
             $table->id('id_post');
             $table->unsignedBigInteger('fk_id_user');
             $table->unsignedBigInteger('fk_id_event')->nullable();
-            $table->text('text')->nullable()->max(255);
-            $table->string('latitud')->nullable();
-            $table->string('longitud')->nullable();
+            $table->unsignedBigInteger('fk_id_group')->nullable();
+            $table->unsignedBigInteger('location');
+            $table->text('text')->max(500);
             $table->dateTime('date');
             $table->integer("votes")->default(0);
             $table->integer("comments")->default(0);
             
             $table->foreign('fk_id_user')->references('id')->on('users');
             $table->foreign('fk_id_event')->references('id')->on('events');
-
+            $table->foreign('fk_id_group')->references('id_group')->on('groups');
+            $table->foreign('location')->references('id_country')->on('country');
             $table->timestamps();
             $table->softDeletes();
         });
